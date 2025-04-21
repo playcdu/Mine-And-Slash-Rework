@@ -221,7 +221,7 @@ public class ExileDB {
         return Database.getRegistry(ExileRegistryTypes.SPELL_SCHOOL);
     }
 
-   
+
     public static ExileRegistryContainer<MapAffix> MapAffixes() {
         return Database.getRegistry(ExileRegistryTypes.MAP_AFFIX);
     }
@@ -283,12 +283,15 @@ public class ExileDB {
     }
 
     public static void checkAllDatabasesHaveDefaultEmpty() {
-
-        for (ExileRegistryType type : ExileRegistryType.getAllInRegisterOrder()) {
-            var reg = Database.getRegistry(type);
-            var em = reg.getDefault();
-            if (em == null) {
-                if (MMORPG.RUN_DEV_TOOLS) {
+        if (MMORPG.RUN_DEV_TOOLS) {
+            for (ExileRegistryType type : ExileRegistryType.getAllInRegisterOrder()) {
+                var reg = Database.getRegistry(type);
+                if (reg == null) {
+                    ExileLog.get().warn(type.id + " registry returns null");
+                    continue;
+                }
+                var em = reg.getDefault();
+                if (em == null) {
                     ExileLog.get().warn(type.id + " default is null or not registered");
                 }
             }
