@@ -110,7 +110,8 @@ public class Backpacks {
                     bag.addItem(stack.copy());
                     stack.shrink(stack.getCount() + 10); // just in case
                     if (shouldPlaySound) SoundUtils.playSound(this.player, SoundEvents.ITEM_PICKUP);
-                    result =  true;
+                    result = true;
+                    break;
                 }
             }
         }
