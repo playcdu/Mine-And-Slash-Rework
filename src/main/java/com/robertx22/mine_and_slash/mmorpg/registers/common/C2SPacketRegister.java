@@ -11,6 +11,8 @@ import com.robertx22.mine_and_slash.mmorpg.MMORPG;
 import com.robertx22.mine_and_slash.prophecy.AcceptProphecyAffixPacket;
 import com.robertx22.mine_and_slash.prophecy.AcceptProphecyPacket;
 import com.robertx22.mine_and_slash.vanilla_mc.packets.*;
+import com.robertx22.mine_and_slash.vanilla_mc.packets.backpack.BackPackLootMenuPacket;
+import com.robertx22.mine_and_slash.vanilla_mc.packets.backpack.OpenBackpackPacket;
 import com.robertx22.mine_and_slash.vanilla_mc.packets.perks.PerkChangePacket;
 import com.robertx22.mine_and_slash.vanilla_mc.packets.spells.TellServerToCancelSpellCast;
 import com.robertx22.mine_and_slash.vanilla_mc.packets.spells.TellServerToCastSpellPacket;
@@ -39,6 +41,8 @@ public class C2SPacketRegister {
         Packets.registerClientToServerPacket(MMORPG.NETWORK, new UnsummonPacket(), i++);
         Packets.registerClientToServerPacket(MMORPG.NETWORK, new RequestStatCalcInfoPacket(), i++);
         Packets.registerClientToServerPacket(MMORPG.NETWORK, new LockRecipePacket(""), i++);
+
+        Packets.registerClientToServerPacket(MMORPG.NETWORK, new BackPackLootMenuPacket(), i++);
    
 
         // Packets.registerClientToServerPacket(MMORPG.NETWORK, new SetupHotbarPacket(), i++);

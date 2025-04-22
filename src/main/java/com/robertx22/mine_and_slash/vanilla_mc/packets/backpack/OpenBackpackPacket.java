@@ -1,4 +1,4 @@
-package com.robertx22.mine_and_slash.vanilla_mc.packets;
+package com.robertx22.mine_and_slash.vanilla_mc.packets.backpack;
 
 import com.robertx22.library_of_exile.main.MyPacket;
 import com.robertx22.library_of_exile.packets.ExilePacketContext;

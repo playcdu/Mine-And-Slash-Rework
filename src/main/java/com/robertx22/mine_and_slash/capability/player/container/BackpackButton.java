@@ -1,7 +1,7 @@
 package com.robertx22.mine_and_slash.capability.player.container;
 
 import com.robertx22.mine_and_slash.capability.player.data.Backpacks;
-import com.robertx22.mine_and_slash.vanilla_mc.packets.OpenBackpackPacket;
+import com.robertx22.mine_and_slash.vanilla_mc.packets.backpack.OpenBackpackPacket;
 import com.robertx22.library_of_exile.main.Packets;
 import com.robertx22.library_of_exile.utils.TextUTIL;
 import net.minecraft.client.Minecraft;

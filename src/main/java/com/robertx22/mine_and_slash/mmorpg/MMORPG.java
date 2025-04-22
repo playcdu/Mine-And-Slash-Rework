@@ -21,6 +21,8 @@ import com.robertx22.mine_and_slash.aoe_data.database.stat_conditions.StatCondit
 import com.robertx22.mine_and_slash.aoe_data.database.stat_effects.StatEffects;
 import com.robertx22.mine_and_slash.aoe_data.database.stats.Stats;
 import com.robertx22.mine_and_slash.aoe_data.datapacks.lang_file.CreateLangFile;
+import com.robertx22.mine_and_slash.capability.player.container.BackpackQuickLootButton;
+import com.robertx22.mine_and_slash.capability.player.container.BackpackScreen;
 import com.robertx22.mine_and_slash.characters.PlayerStats;
 import com.robertx22.mine_and_slash.config.forge.ClientConfigs;
 import com.robertx22.mine_and_slash.config.forge.ServerContainer;
@@ -55,6 +57,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -152,6 +155,10 @@ public class MMORPG {
 
         ForgeEvents.registerForgeEvent(RegisterClientTooltipComponentFactoriesEvent.class, x -> {
             x.register(SocketTooltip.SocketComponent.class, SocketTooltip::new);
+        });
+
+        ForgeEvents.registerForgeEvent(ScreenEvent.Init.class, x -> {
+            BackpackQuickLootButton.addLootButton(x);
         });
 
 

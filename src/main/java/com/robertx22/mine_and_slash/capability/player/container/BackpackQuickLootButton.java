@@ -1,0 +1,31 @@
+package com.robertx22.mine_and_slash.capability.player.container;
+
+import com.robertx22.library_of_exile.main.Packets;
+import com.robertx22.mine_and_slash.mmorpg.SlashRef;
+import com.robertx22.mine_and_slash.uncommon.localization.Gui;
+import com.robertx22.mine_and_slash.vanilla_mc.packets.backpack.BackPackLootMenuPacket;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.Slot;
+import net.minecraftforge.client.event.ScreenEvent;
+
+public class BackpackQuickLootButton extends ImageButton {
+    static ResourceLocation TEXTURE = SlashRef.id("textures/gui/backpack_button.png");
+    public BackpackQuickLootButton(int pX, int pY, ContainerScreen screen) {
+        super(pX, pY, 14, 14, 0, 0, 16, TEXTURE, 16, 32, x -> Packets.sendToServer(new BackPackLootMenuPacket()), Gui.MASTER_BACKPACK_LOOT_BUTTON.locName());
+        this.setTooltip(Tooltip.create(Gui.MASTER_BACKPACK_LOOT_BUTTON.locName()));
+    }
+    
+
+    public static void addLootButton(ScreenEvent.Init event){
+        if (!(event instanceof ScreenEvent.Init.Post)) return;
+        if (Minecraft.getInstance().screen instanceof ContainerScreen containerScreen){
+            event.addListener(new BackpackQuickLootButton(containerScreen.getGuiLeft() + containerScreen.getXSize(), containerScreen.getGuiTop(), containerScreen));
+        }
+    }
+}
