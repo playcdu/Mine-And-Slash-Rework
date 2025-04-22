@@ -79,7 +79,10 @@ public class ClientConfigs {
                 OVERLAY_CONFIGS.put(type, b.defineEnum(type.name() + "_" + "CONFIG", type.getDefaultConfig()));
             }
         }
-
+        b.comment("Buttons").push("buttons");
+        ENABLE_QUICK_LOOT_BUTTON = b.define("enable_quick_loot_button", true);
+        QUICK_LOOT_BUTTON_X_OFFSET = b.define("quick_loot_button_x_offset", 0);
+        QUICK_LOOT_BUTTON_Y_OFFSET = b.define("quick_loot_button_y_offset", 0);
 
         b.pop();
 
@@ -115,6 +118,10 @@ public class ClientConfigs {
 
     public ForgeConfigSpec.IntValue REMOVE_EMPTY_TOOLTIP_LINES_IF_MORE_THAN_X_LINES;
     public ForgeConfigSpec.IntValue SHOW_DECIMALS_ON_NUMBER_SMALLER_THAN;
+
+    public ForgeConfigSpec.BooleanValue ENABLE_QUICK_LOOT_BUTTON;
+    public ForgeConfigSpec.ConfigValue<Integer> QUICK_LOOT_BUTTON_X_OFFSET;
+    public ForgeConfigSpec.ConfigValue<Integer> QUICK_LOOT_BUTTON_Y_OFFSET;
 
 
     public OverlayConfig getOverlayConfig(OverlayType type) {
