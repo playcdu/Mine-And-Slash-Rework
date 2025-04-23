@@ -8,11 +8,27 @@ import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.Slot;
-import net.minecraftforge.client.event.sound.SoundEvent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+
+import java.util.List;
 
 public class BackPackLootMenuPacket extends MyPacket<BackPackLootMenuPacket> {
+    Mode mode;
+
+    public BackPackLootMenuPacket() {
+    }
+
+
+    public BackPackLootMenuPacket(Mode mode) {
+        this.mode = mode;
+    }
+
     @Override
     public ResourceLocation getIdentifier() {
         return SlashRef.id("backpack_loot");
@@ -20,29 +36,50 @@ public class BackPackLootMenuPacket extends MyPacket<BackPackLootMenuPacket> {
 
     @Override
     public void loadFromData(FriendlyByteBuf friendlyByteBuf) {
-
+        mode = friendlyByteBuf.readEnum(Mode.class);
     }
 
     @Override
     public void saveToData(FriendlyByteBuf friendlyByteBuf) {
-
+        friendlyByteBuf.writeEnum(mode);
     }
 
     @Override
     public void onReceived(ExilePacketContext exilePacketContext) {
         if (exilePacketContext.getPlayer() instanceof ServerPlayer player) {
             Backpacks backpacks = Load.backpacks(player).getBackpacks();
-            if (player.hasContainerOpen() && player.containerMenu instanceof ChestMenu chestMenu) {
-                for (Slot slot : chestMenu.slots) {
-                    backpacks.tryAutoPickup(player, slot.getItem(), false);
+
+                if (player.hasContainerOpen() && player.containerMenu instanceof ChestMenu chestMenu) {
+                    for (Slot slot : chestMenu.slots) {
+                        if (slot.container instanceof Inventory) continue;
+                        ItemStack item = slot.getItem();
+                        if (item.is(Items.AIR)) continue;
+                        if (mode == Mode.LOOT){
+                            backpacks.tryAutoPickup(player, item, false);
+                        } else {
+                            turnItemToPickableAndRemove(item, player);
+                        }
+                    }
                 }
-            }
 
         }
+    }
+
+    public static void turnItemToPickableAndRemove(ItemStack itemStacks, Player player){
+        ItemEntity itemEntity = player.spawnAtLocation(itemStacks.copy(), 1.0f);
+        if (itemEntity != null){
+            itemEntity.setNoPickUpDelay();
+        }
+        itemStacks.shrink(itemStacks.getCount());
     }
 
     @Override
     public MyPacket<BackPackLootMenuPacket> newInstance() {
         return new BackPackLootMenuPacket();
+    }
+
+    public enum Mode {
+        LOOT,
+        DROP
     }
 }
