@@ -54,6 +54,7 @@ public class ClientConfigs {
         DONT_CULL_PARTICLES_UNDER = b.defineInRange("DONT_CULL_PARTICLES_UNDER", 50D, 0D, 5000D);
 
         HOTBAR_SWAPPING = b.comment("When OFF: 8 bars, 8 keybinds. When ON: 4 bars, 5 keybinds(4 for each bar, 1 for hotbar swap button)").define("HOTBAR_SWAPPING", false);
+        HIDE_SPELL_HOTBAR_WHEN_NO_SPELL = b.define("hide_spell_hotbar_when_no_spell", true);
 
         GUI_POSITION = b.defineEnum("GUI_POSITION", GuiPosition.TOP_LEFT);
         ITEM_RARITY_BACKGROUND_TYPE = b.defineEnum("ITEM_RARITY_BACKGROUND_TYPE", GlintType.FULL);
@@ -79,12 +80,14 @@ public class ClientConfigs {
                 OVERLAY_CONFIGS.put(type, b.defineEnum(type.name() + "_" + "CONFIG", type.getDefaultConfig()));
             }
         }
+        b.pop();
         b.comment("Buttons").push("buttons");
         ENABLE_QUICK_LOOT_BUTTON = b.define("enable_quick_loot_button", true);
         QUICK_LOOT_BUTTON_X_OFFSET = b.define("quick_loot_button_x_offset", 0);
         QUICK_LOOT_BUTTON_Y_OFFSET = b.define("quick_loot_button_y_offset", 0);
 
         b.pop();
+
 
     }
 
@@ -100,6 +103,7 @@ public class ClientConfigs {
     public ForgeConfigSpec.BooleanValue MODIFY_TOOLTIP_LENGTH;
     public ForgeConfigSpec.BooleanValue IN_DEPTH_TOOLTIPS_BY_DEFAULT;
     public ForgeConfigSpec.BooleanValue HOTBAR_SWAPPING;
+    public ForgeConfigSpec.BooleanValue HIDE_SPELL_HOTBAR_WHEN_NO_SPELL;
     public ForgeConfigSpec.BooleanValue USE_SPELL_ANIMATIONS;
     public ForgeConfigSpec.EnumValue<GuiBarRenderOption> RENDER_FILLED_GUI_BARS;
 
