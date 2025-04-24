@@ -64,7 +64,12 @@ public class SpellHotbarOverlay {
                 int yp = y + 3;
                 list.add(new SpellOnHotbarRender(type == OverlayType.SPELL_HOTBAR_HORIZONTAL, place, gui, xp, yp)) ;
             }
-            if (ClientConfigs.getConfig().HIDE_SPELL_HOTBAR_WHEN_NO_SPELL.get() && list.stream().anyMatch(spell -> spell.spell != null)){
+            if (ClientConfigs.getConfig().HIDE_SPELL_HOTBAR_WHEN_NO_SPELL.get()){
+                if (list.stream().anyMatch(spell -> spell.spell != null)){
+                    renderHotbarBackground(type, type.getSize(), gui, x, y);
+                    list.forEach(SpellOnHotbarRender::render);
+                }
+            } else {
                 renderHotbarBackground(type, type.getSize(), gui, x, y);
                 list.forEach(SpellOnHotbarRender::render);
             }
