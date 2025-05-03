@@ -13,6 +13,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
 public class SpellHotbarOverlay {
 
 
@@ -51,20 +55,23 @@ public class SpellHotbarOverlay {
             int x = config.getPos().x;
             int y = config.getPos().y;
 
-
-            renderHotbarBackground(type, type.getSize(), gui, x, y);
-
             int spells = 8;
-
+            List<SpellOnHotbarRender> list = new ArrayList<>();
 
             for (int i = 0; i < spells; i++) {
-
                 int place = i;
                 int xp = x + 3;
                 int yp = y + 3;
-
-                var spellRen = new SpellOnHotbarRender(type == OverlayType.SPELL_HOTBAR_HORIZONTAL, place, gui, xp, yp);
-                spellRen.render();
+                list.add(new SpellOnHotbarRender(type == OverlayType.SPELL_HOTBAR_HORIZONTAL, place, gui, xp, yp)) ;
+            }
+            if (ClientConfigs.getConfig().HIDE_SPELL_HOTBAR_WHEN_NO_SPELL.get()){
+                if (list.stream().anyMatch(spell -> spell.spell != null)){
+                    renderHotbarBackground(type, type.getSize(), gui, x, y);
+                    list.forEach(SpellOnHotbarRender::render);
+                }
+            } else {
+                renderHotbarBackground(type, type.getSize(), gui, x, y);
+                list.forEach(SpellOnHotbarRender::render);
             }
 
             RenderSystem.disableBlend(); // enables transparency
