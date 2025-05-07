@@ -63,6 +63,8 @@ public class LevelUtils {
         return (int) (Math.pow(exp * GameBalanceConfig.get().NORMAL_STAT_SCALING.getMultiFor(level), 1.1F));
     }
 
+    public static String OBELISK_DIM = "ancient_obelisks:obelisk";
+    public static String HARVEST_DIM = "the_harvest:harvest";
 
     public static LevelInfo determineLevel(@Nullable LivingEntity en, Level world, BlockPos pos, @Nullable Player nearestPlayer, boolean usevariance) {
 
@@ -71,6 +73,10 @@ public class LevelUtils {
         ServerLevel sw = (ServerLevel) world;
 
         var opt = WorldUtils.ifMapData(world, pos);
+
+        boolean scaletoPlayer = false;
+
+        boolean ignoreEntityConfig = false;
 
         if (opt.isPresent()) {
 
@@ -82,11 +88,18 @@ public class LevelUtils {
             } else {
                 System.out.print("A mob spawned in a dungeon world without a dungeon data nearby!");
             }
+        } else {
+            // if the player enters side content not connected to map, it wont have data, so it should force the level to scale to player
+            var dimid = MapManager.getResourceLocation((Level) world).toString();
+            if (dimid.equals(OBELISK_DIM) || dimid.equals(HARVEST_DIM)) {
+                scaletoPlayer = true;
+                ignoreEntityConfig = true;
+            }
         }
 
         DimensionConfig dimConfig = ExileDB.getDimensionConfig(world);
 
-        if (ServerContainer.get().SCALE_MOB_LEVEL_TO_NEAREST_PLAYER.get() && nearestPlayer != null) {
+        if ((scaletoPlayer || ServerContainer.get().SCALE_MOB_LEVEL_TO_NEAREST_PLAYER.get()) && nearestPlayer != null) {
             info.set(LevelInfo.LevelSource.NEAREST_PLAYER_CONFIG, Load.Unit(nearestPlayer).getLevel());
         } else {
             if (isInMinLevelArea(sw, pos, dimConfig)) {
@@ -109,8 +122,10 @@ public class LevelUtils {
         info.capToRange(LevelInfo.LevelSource.MAX_LEVEL, new MinMax(1, GameBalanceConfig.get().MAX_LEVEL));
 
         if (en != null) {
-            var enconfig = ExileDB.getEntityConfig(en, Load.Unit(en));
-            info.capToRange(LevelInfo.LevelSource.ENTITY_CONFIG, new MinMax(enconfig.min_lvl, enconfig.max_lvl));
+            if (!ignoreEntityConfig) {
+                var enconfig = ExileDB.getEntityConfig(en, Load.Unit(en));
+                info.capToRange(LevelInfo.LevelSource.ENTITY_CONFIG, new MinMax(enconfig.min_lvl, enconfig.max_lvl));
+            }
         }
 
         return info;

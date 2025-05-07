@@ -6,6 +6,7 @@ import com.robertx22.dungeon_realm.main.DungeonMain;
 import com.robertx22.mine_and_slash.a_libraries.dmg_number_particle.DamageParticle;
 import com.robertx22.mine_and_slash.a_libraries.dmg_number_particle.DamageParticleRenderer;
 import com.robertx22.mine_and_slash.a_libraries.player_animations.PlayerAnimations;
+import com.robertx22.mine_and_slash.capability.player.container.BackpackQuickLootButton;
 import com.robertx22.mine_and_slash.config.forge.ClientConfigs;
 import com.robertx22.mine_and_slash.config.forge.overlay.OverlayPresets;
 import com.robertx22.mine_and_slash.gui.SocketTooltip;
@@ -29,6 +30,7 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderTooltipEvent;
+import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -39,6 +41,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ClientInit {
 
     public static void onInitializeClient(final FMLClientSetupEvent event) {
+
+        ForgeEvents.registerForgeEvent(ScreenEvent.Init.class, x -> {
+            BackpackQuickLootButton.addLootButton(x);
+        });
 
         OrbAddonClientInit.init();
 
