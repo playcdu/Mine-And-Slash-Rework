@@ -32,7 +32,7 @@ public class FilterGroupButton extends AbstractButton {
         var cur = screen.getFilter(filter);
 
         if (cur == GroupFilterEntry.NONE) {
-            return Words.PICK_CURSE.locName(filter.word.locName());
+            return Words.PICK_SLOT.locName(filter.word.locName());
         } else {
             return screen.getFilter(filter).getName();
         }

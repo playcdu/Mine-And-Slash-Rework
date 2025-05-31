@@ -24,6 +24,7 @@ public enum Words implements IAutoLocName {
     UNKNOWN_DAMAGE("[Error, dmg isn't a basic attack, spell or ailment]"),
     BASIC_ATTACK("Basic Attack"),
     PICK_CURSE("Pick Curse"),
+    PICK_SLOT("Pick Slot"),
     ANY_ITEM("Any Matching Item"),
 
     TELEPORT_TO_BOSS("Enter Boss Arena!"),
