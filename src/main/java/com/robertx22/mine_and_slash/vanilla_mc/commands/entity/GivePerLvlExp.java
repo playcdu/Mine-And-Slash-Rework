@@ -7,6 +7,7 @@ import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import com.robertx22.mine_and_slash.vanilla_mc.commands.CommandRefs;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.arguments.EntityArgument;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
 import static net.minecraft.commands.Commands.argument;
@@ -30,6 +31,7 @@ public class GivePerLvlExp {
         try {
             int total = xp * Load.Unit(player).getLevel();
             Load.Unit(player).GiveExp(player, total, new LootModifiersList());
+            player.sendSystemMessage(Component.literal("Gained " + total + " Experience")); // Success message
 
         } catch (Exception e) {
             e.printStackTrace();
