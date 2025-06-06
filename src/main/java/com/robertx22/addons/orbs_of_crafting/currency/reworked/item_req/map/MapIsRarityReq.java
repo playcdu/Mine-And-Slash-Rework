@@ -10,6 +10,7 @@ import com.robertx22.mine_and_slash.itemstack.ExileStack;
 import com.robertx22.mine_and_slash.itemstack.StackKeys;
 import com.robertx22.mine_and_slash.mmorpg.SlashRef;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.item.ItemStack;
 
 public class MapIsRarityReq extends MapRequirement {
 
@@ -38,16 +39,8 @@ public class MapIsRarityReq extends MapRequirement {
 
     @Override
     public boolean isMapValid(ExileStack stack) {
-        var data = stack.get(StackKeys.MAP).get();
 
-        if (data == null) {
-            return false;
-        }
-
-        if (!data.getRarity().GUID().equals(data.rar)) {
-            return false;
-        }
-        return true;
+        return stack.get(StackKeys.MAP).hasAndTrue(x -> x.rar.equals(data.rar));
     }
 
     @Override

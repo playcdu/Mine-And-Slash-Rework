@@ -4,6 +4,8 @@ package com.robertx22.mine_and_slash.maps;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.robertx22.library_of_exile.utils.ItemstackDataSaver;
+import com.robertx22.dungeon_realm.item.DungeonItemMapData;
+import com.robertx22.dungeon_realm.item.DungeonItemNbt;
 import com.robertx22.mine_and_slash.aoe_data.database.stats.OffenseStats;
 import com.robertx22.mine_and_slash.config.forge.ServerContainer;
 import com.robertx22.mine_and_slash.database.data.game_balance_config.GameBalanceConfig;
@@ -214,18 +216,27 @@ public class MapItemData implements ICommonDataItem<GearRarity> {
 
                     }
                 })
-                .accept(new AdditionalBlock(() -> !tooltipInfo.shouldShowDescriptions() ?
-                        ImmutableList.of(
-                                Itemtips.Exp.locName(this.getBonusExpAmountInPercent()).withStyle(ChatFormatting.GOLD),
-                                Itemtips.Loot.locName(this.getBonusLootAmountInPercent()).withStyle(ChatFormatting.GOLD),
-                                TooltipUtils.tier(this.tier).withStyle(ChatFormatting.GOLD))
-                        :
-                        ImmutableList.of(
-                                Itemtips.Exp.locName(this.getBonusExpAmountInPercent()).withStyle(ChatFormatting.GOLD),
-                                Itemtips.Loot.locName(this.getBonusLootAmountInPercent()).withStyle(ChatFormatting.GOLD),
-                                TooltipUtils.tier(this.tier).withStyle(ChatFormatting.GOLD),
-                                Component.literal("[" + Itemtips.SOUL_TIER_TIP.locName().getString() + "]").withStyle(ChatFormatting.BLUE)
-                        )))
+                .accept(new AdditionalBlock(() -> {
+                    List<Component> additional = new ArrayList<>();
+                    // Load DungeonItemMapData and check for uber status
+                    com.robertx22.dungeon_realm.item.DungeonItemMapData dungeonData = com.robertx22.dungeon_realm.item.DungeonItemNbt.DUNGEON_MAP.loadFrom(stack.getStack());
+
+                    if (dungeonData != null && dungeonData.uber) {
+                        additional.add(Component.literal("Uber Map").withStyle(ChatFormatting.RED)); // Added Uber Map indicator
+                    }
+
+                    if (!tooltipInfo.shouldShowDescriptions()) {
+                        additional.add(Itemtips.Exp.locName(this.getBonusExpAmountInPercent()).withStyle(ChatFormatting.GOLD));
+                        additional.add(Itemtips.Loot.locName(this.getBonusLootAmountInPercent()).withStyle(ChatFormatting.GOLD));
+                        additional.add(TooltipUtils.tier(this.tier).withStyle(ChatFormatting.GOLD));
+                    } else {
+                        additional.add(Itemtips.Exp.locName(this.getBonusExpAmountInPercent()).withStyle(ChatFormatting.GOLD));
+                        additional.add(Itemtips.Loot.locName(this.getBonusLootAmountInPercent()).withStyle(ChatFormatting.GOLD));
+                        additional.add(TooltipUtils.tier(this.tier).withStyle(ChatFormatting.GOLD));
+                        additional.add(Component.literal("[" + Itemtips.SOUL_TIER_TIP.locName().getString() + "]").withStyle(ChatFormatting.BLUE));
+                    }
+                    return additional;
+                }))
                 //handle possibleRarities
                 .accept(WorksOnBlock.possibleDrops(ExileDB.GearRarities().getFilterWrapped(
                         x -> this.tier >= ExileDB.GearRarities().get(x.min_map_rarity_to_drop).map_tiers.min
@@ -237,6 +248,7 @@ public class MapItemData implements ICommonDataItem<GearRarity> {
         return tip.release();
 
     }
+
 
 
     @Override
