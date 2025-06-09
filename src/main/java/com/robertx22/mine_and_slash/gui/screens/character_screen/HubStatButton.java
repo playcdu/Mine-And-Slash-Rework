@@ -93,7 +93,7 @@ public class HubStatButton extends ImageButton {
         gui.blit(tex, getX(), getY(), 0, 0, xSize, ySize, xSize, ySize);
 
 
-        String stattext = ((int) stat.getValue()) + "";
+        String stattext = CharacterStatsButtons.getHubStatString(stat.GetStat(), Load.Unit(ClientOnly.getPlayer()));
 
         // gui.drawCenteredString(Minecraft.getInstance().font, stattext, getX() + numX, getY() + numY, ChatFormatting.YELLOW.getColor());
 

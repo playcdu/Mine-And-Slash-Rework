@@ -78,23 +78,47 @@ public class CharacterStatsButtons extends ImageButton {
     public static String getStatString(Stat stat, EntityData unitdata) {
         StatData data = unitdata.getUnit().getCalculatedStat(stat);
 
-        String v1 = NumberUtils.formatForTooltip(data.getValue());
-
         String str = "";
-
-        str = v1;
-
-        if (stat.IsPercent()) {
-            str += '%';
-        }
+        String v1 = NumberUtils.formatForTooltip(data.getValue());
 
         if (stat instanceof IUsableStat) {
             IUsableStat usable = (IUsableStat) stat;
 
             String value = NumberUtils.format(usable.getUsableValue(unitdata.getUnit(), (int) data.getValue(), unitdata.getLevel()) * 100);
 
-            str += " (" + value + "%)";
+            str += value + "%";
 
+            if (stat.IsPercent()) {
+                str += " (" + v1 + "%)";
+            } else {
+                str += " (" + v1 + ")";
+            }
+        } else {
+            str += v1;
+
+            if (stat.IsPercent()) {
+                str += '%';
+            }
+        }
+        return str;
+
+    }
+
+
+    public static String getHubStatString(Stat stat, EntityData unitdata) {
+        StatData data = unitdata.getUnit().getCalculatedStat(stat);
+
+        String str = "";
+        String v1 = NumberUtils.formatForTooltip(data.getValue());
+
+        if (stat instanceof IUsableStat) {
+            IUsableStat usable = (IUsableStat) stat;
+
+            String value = NumberUtils.format(usable.getUsableValue(unitdata.getUnit(), (int) data.getValue(), unitdata.getLevel()) * 100);
+
+            str += value;
+        } else {
+            str += v1;
         }
         return str;
 
