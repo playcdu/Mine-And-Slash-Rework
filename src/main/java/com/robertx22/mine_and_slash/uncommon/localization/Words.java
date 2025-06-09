@@ -178,6 +178,9 @@ public enum Words implements IAutoLocName {
     SHIFT_TO_SHOW_EFFECT("Press [Shift] to Show Status Effect info."),
     ONLY_SHOW_ALLOCATED("Only Show Allocated Talents, Toggle ON/OFF"),
 
+    MIN_DROP_LEVEL("Min Drop Level: "),
+    MIN_DROP_TIER("Min Drop Tier: "),
+
     SPELL_STATS("Spell Stats:"),
     CASTED_TIMES_CHANNEL("Casted %1$s times during channel."),
     INSTANT_CAST("Instant Cast"),

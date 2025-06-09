@@ -6,6 +6,7 @@ import com.robertx22.library_of_exile.tooltip.ExileTooltipUtils;
 import com.robertx22.mine_and_slash.capability.entity.EntityData;
 import com.robertx22.mine_and_slash.config.forge.ClientConfigs;
 import com.robertx22.mine_and_slash.database.data.stats.types.resources.energy.Energy;
+import com.robertx22.mine_and_slash.database.data.unique_items.UniqueGear;
 import com.robertx22.mine_and_slash.gui.texts.ExileTooltips;
 import com.robertx22.mine_and_slash.gui.texts.IgnoreNullList;
 import com.robertx22.mine_and_slash.gui.texts.StatCategory;
@@ -259,6 +260,17 @@ public class GearTooltipUtils {
 
         if (gear.isUnique() && !gear.uniqueStats.getUnique(exStack).league.isEmpty()) {
             etip.accept(new LeagueBlock(LibDatabase.Leagues().get(gear.uniqueStats.getUnique(exStack).league)));
+        }
+
+        if (gear.isUnique()) {
+            etip.accept(new AdditionalBlock(() -> {
+                UniqueGear unique = gear.uniqueStats.getUnique(exStack);
+                return ImmutableList.of(
+                        Words.MIN_DROP_LEVEL.locName().withStyle(ChatFormatting.YELLOW).
+                                append(String.valueOf(unique.min_drop_lvl)).append(Gui.COMMA_SEPARATOR.locName()).append(
+                                        Words.MIN_DROP_TIER.locName()).append(String.valueOf(unique.min_tier))
+                );
+            }).showWhen(() -> info.hasShiftDown));
         }
 
         etip.accept(new SalvageBlock(gear, exStack))
