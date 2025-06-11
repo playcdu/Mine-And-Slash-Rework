@@ -346,7 +346,7 @@ public class DamageEvent extends EffectEvent {
             if (attackInfo.getSource().getDirectEntity() instanceof ProjectileEntityDuck) {
                 if (data.getWeaponType() == WeaponTypes.bow) {
 
-                    if (!ServerContainer.get().REMOVE_ATK_SPEED_COOLDOWN.get()) {
+                    if (!ServerContainer.get().REMOVE_DRAW_SPEED_COOLDOWN.get()) {
 
                         // don't use this for crossbows, only bows need to be charged fully
 
