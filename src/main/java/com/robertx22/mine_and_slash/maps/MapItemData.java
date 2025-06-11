@@ -1,7 +1,5 @@
 package com.robertx22.mine_and_slash.maps;
 
-
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.robertx22.library_of_exile.utils.ItemstackDataSaver;
 import com.robertx22.dungeon_realm.item.DungeonItemMapData;
@@ -219,7 +217,7 @@ public class MapItemData implements ICommonDataItem<GearRarity> {
                 .accept(new AdditionalBlock(() -> {
                     List<Component> additional = new ArrayList<>();
                     // Load DungeonItemMapData and check for uber status
-                    com.robertx22.dungeon_realm.item.DungeonItemMapData dungeonData = com.robertx22.dungeon_realm.item.DungeonItemNbt.DUNGEON_MAP.loadFrom(stack.getStack());
+                    DungeonItemMapData dungeonData = DungeonItemNbt.DUNGEON_MAP.loadFrom(stack.getStack());
 
                     if (dungeonData != null && dungeonData.uber) {
                         additional.add(Component.literal("Uber Map").withStyle(ChatFormatting.RED)); // Added Uber Map indicator
