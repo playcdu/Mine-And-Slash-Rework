@@ -162,6 +162,25 @@ public class SpellChangeStats {
             })
             .build();
 
+    public static DataPackStatAccessor<EmptyAccessor> PROJECTILE_SPREAD_RANDOMNESS = DatapackStatBuilder
+            .ofSingle("proj_spread_randomness", Elements.Physical)
+            .worksWithEvent(SpellStatsCalculationEvent.ID)
+            .setPriority(StatPriority.Spell.FIRST)
+            .setSide(EffectSides.Source)
+            .addCondition(StatConditions.SPELL_HAS_TAG.get(SpellTags.projectile))
+            .addEffect(StatEffects.INCREASE_PROJ_SPREAD_RANDOMNESS)
+            .setLocName(x -> "Random Projectile Spread")
+            .setLocDesc(x -> "Makes your projectiles fire with randomized pitch and yaw.")
+            .modifyAfterDone(x -> {
+                x.is_perc = true;
+                x.min = -100;
+                x.max = 100;
+                x.minus_is_good = true;
+                x.icon = "\u27B9";
+                x.format = ChatFormatting.GREEN.getName();
+            })
+            .build();
+
     public static DataPackStatAccessor<EmptyAccessor> PROJECTILE_COUNT = DatapackStatBuilder
             .ofSingle("projectile_count", Elements.Physical)
             .worksWithEvent(SpellStatsCalculationEvent.ID)

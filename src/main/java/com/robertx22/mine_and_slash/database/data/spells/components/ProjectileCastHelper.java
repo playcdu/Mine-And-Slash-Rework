@@ -28,6 +28,7 @@ public class ProjectileCastHelper {
     public float apart = 3;
     public float shootSpeed = 1;
     public int projectilesAmount = 1;
+    public float randomSpreadDegrees = 0f;
     public boolean gravity = true;
     EntityType projectile;
     CalculatedSpellData data;
@@ -84,16 +85,36 @@ public class ProjectileCastHelper {
                     posAdd = getSideVelocity(caster).multiply(offset, offset, offset);
                 }
             }
+
+            // Apply random spread offsets to yaw and pitch
+            float randomYawOffset = 0f;
+            float randomPitchOffset = 0f;
+            if (randomSpreadDegrees > 0f) {
+                randomYawOffset = (float) ((Math.random() * 2 - 1) * randomSpreadDegrees);
+                randomPitchOffset = (float) ((Math.random() * 2 - 1) * randomSpreadDegrees);
+            }
+
             // copied from multishot crossbow code
             Vec3 vec31 = this.caster.getUpVector(1.0F);
-            Quaternionf quaternionf = (new Quaternionf()).setAngleAxis((double) (addYaw * ((float) java.lang.Math.PI / 180F)), vec31.x, vec31.y, vec31.z);
-            Vec3 vec3 = caster.getViewVector(1.0F);
-            Vector3f finalVel = vec3.toVector3f().rotate(quaternionf);
+
+            // Convert pitch and yaw (including offsets) to radians
+            float totalPitch = pitch + randomPitchOffset;
+            float totalYaw = yaw + addYaw + randomYawOffset;
+
+            float pitchRad = (float) Math.toRadians(totalPitch);
+            float yawRad = (float) Math.toRadians(totalYaw);
+
+            // Calculate direction vector from pitch and yaw
+            float x = -Mth.sin(yawRad) * Mth.cos(pitchRad);
+            float y = -Mth.sin(pitchRad);
+            float z = Mth.cos(yawRad) * Mth.cos(pitchRad);
+
+            Vector3f finalVel = new Vector3f(x, y, z);
 
             //posAdd = new MyPosition(finalVel);
 
             AbstractArrow en = (AbstractArrow) projectile.create(world);
-            SpellUtils.shootProjectile(pos.add(posAdd), en, ctx.getPositionEntity(), shootSpeed, pitch, yaw + addYaw);
+            SpellUtils.shootProjectile(pos.add(posAdd), en, ctx.getPositionEntity(), shootSpeed, pitch + randomPitchOffset, yaw + addYaw + randomYawOffset);
             SpellUtils.initSpellEntity(en, caster, data, holder);
 
             en.shoot(finalVel.x, finalVel.y, finalVel.z, shootSpeed, 1);
@@ -111,7 +132,7 @@ public class ProjectileCastHelper {
                 EntityFinder.Setup<LivingEntity> finder = EntityFinder.start(caster, LivingEntity.class, pos)
                         .finder(EntityFinder.SelectionType.RADIUS)
                         .searchFor(AllyOrEnemy.enemies)
-                        .predicate(x -> AoeSelector.canHit(ctx.getPos(), x))
+                        .predicate(e -> AoeSelector.canHit(ctx.getPos(), e))
                         .radius(15);
 
 

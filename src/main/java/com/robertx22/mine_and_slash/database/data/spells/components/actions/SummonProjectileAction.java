@@ -21,7 +21,7 @@ import java.util.Optional;
 public class SummonProjectileAction extends SpellAction {
 
     public SummonProjectileAction() {
-        super(Arrays.asList(MapField.ENTITY_NAME, MapField.PROJECTILE_COUNT, MapField.ITEM, MapField.PROJECTILE_SPEED, MapField.LIFESPAN_TICKS));
+        super(Arrays.asList(MapField.ENTITY_NAME, MapField.PROJECTILE_COUNT, MapField.ITEM, MapField.PROJECTILE_SPEED, MapField.LIFESPAN_TICKS, MapField.PROJECTILE_SPREAD_RANDOMNESS));
     }
 
     public enum ShootWay {
@@ -67,10 +67,15 @@ public class SummonProjectileAction extends SpellAction {
             builder.targetEnemy = true;
         }
 
+        builder.randomSpreadDegrees = data.getOrDefault(MapField.PROJECTILE_SPREAD_RANDOMNESS, 0D).floatValue();
+
+        builder.randomSpreadDegrees *= ctx.calculatedSpellData.data.getNumber(EventData.PROJECTILE_SPREAD_RANDOMNESS, 1).number;
+
         builder.cast();
     }
 
-    public MapHolder create(Item item, Double projCount, Double speed, EntityType type, Double lifespan, boolean gravity) {
+    // Main create method with spreadRandomness parameter
+    public MapHolder create(Item item, Double projCount, Double speed, EntityType type, Double lifespan, boolean gravity, Double spreadRandomness) {
         MapHolder c = new MapHolder();
         c.put(MapField.PROJECTILE_COUNT, projCount);
         c.put(MapField.ENTITY_NAME, Spell.DEFAULT_EN_NAME);
@@ -81,46 +86,59 @@ public class SummonProjectileAction extends SpellAction {
         c.put(MapField.GRAVITY, gravity);
         c.put(MapField.PROJECTILE_ENTITY, EntityType.getKey(type)
                 .toString());
+        c.put(MapField.PROJECTILE_SPREAD_RANDOMNESS, spreadRandomness);
         c.type = GUID();
         return c;
     }
 
+    public MapHolder create(Item item, Double projCount, Double speed, EntityType type, Double lifespan, boolean gravity) {
+        return create(item, projCount, speed, type, lifespan, gravity, 0D);
+    }
+
+    public MapHolder create(Item item, Double speed, EntityType type, Double lifespan, Double spreadRandomness) {
+        return create(item, 1D, speed, type, lifespan, true, spreadRandomness);
+    }
+
     public MapHolder create(Item item, Double speed, EntityType type, Double lifespan) {
-        MapHolder c = new MapHolder();
-        c.put(MapField.PROJECTILE_COUNT, 1D);
-        c.put(MapField.ENTITY_NAME, Spell.DEFAULT_EN_NAME);
-        c.put(MapField.PROJECTILE_SPEED, speed);
-        c.put(MapField.LIFESPAN_TICKS, lifespan);
-        c.put(MapField.ITEM, VanillaUTIL.REGISTRY.items().getKey(item)
+        return create(item, 1D, speed, type, lifespan, true, 0D);
+    }
+
+    public MapHolder createArrow(Double projCount, Double spreadRandomness) {
+        MapHolder c = createBase(projCount, 3D, 80D, true);
+        c.put(MapField.PROJECTILE_ENTITY, EntityType.getKey(SlashEntities.SIMPLE_ARROW.get())
                 .toString());
-        c.put(MapField.GRAVITY, true);
-        c.put(MapField.PROJECTILE_ENTITY, EntityType.getKey(type)
-                .toString());
-        c.type = GUID();
+        c.put(MapField.PROJECTILE_SPREAD_RANDOMNESS, spreadRandomness);
         return c;
     }
 
     public MapHolder createArrow(Double projCount) {
-        MapHolder c = createBase(projCount, 3D, 80D, true);
-        c.put(MapField.PROJECTILE_ENTITY, EntityType.getKey(SlashEntities.SIMPLE_ARROW.get())
-                .toString());
-        return c;
+        return createArrow(projCount, 0D);
     }
 
-    public MapHolder createFallingArrow(Double speed) {
+    public MapHolder createFallingArrow(Double speed, Double spreadRandomness) {
         MapHolder c = createBase(1D, speed, 60D, true);
         c.put(MapField.PROJECTILE_ENTITY, EntityType.getKey(SlashEntities.SIMPLE_ARROW.get())
                 .toString());
         c.put(MapField.POS_SOURCE, PositionSource.SOURCE_ENTITY.name());
         c.put(MapField.SHOOT_DIRECTION, ShootWay.DOWN.name());
+        c.put(MapField.PROJECTILE_SPREAD_RANDOMNESS, spreadRandomness);
+        return c;
+    }
+
+    public MapHolder createFallingArrow(Double speed) {
+        return createFallingArrow(speed, 0D);
+    }
+
+    public MapHolder createTrident(Double projCount, Double speed, Double lifespan, Double spreadRandomness) {
+        MapHolder c = createBase(projCount, speed, lifespan, true);
+        c.put(MapField.PROJECTILE_ENTITY, EntityType.getKey(SlashEntities.SIMPLE_TRIDENT.get())
+                .toString());
+        c.put(MapField.PROJECTILE_SPREAD_RANDOMNESS, spreadRandomness);
         return c;
     }
 
     public MapHolder createTrident(Double projCount, Double speed, Double lifespan) {
-        MapHolder c = createBase(projCount, speed, lifespan, true);
-        c.put(MapField.PROJECTILE_ENTITY, EntityType.getKey(SlashEntities.SIMPLE_TRIDENT.get())
-                .toString());
-        return c;
+        return createTrident(projCount, speed, lifespan, 0D);
     }
 
     private MapHolder createBase(Double projCount, Double speed, Double lifespan, boolean gravity) {
