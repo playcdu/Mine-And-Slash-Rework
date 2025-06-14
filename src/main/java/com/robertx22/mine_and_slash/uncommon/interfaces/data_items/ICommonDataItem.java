@@ -24,6 +24,11 @@ public interface ICommonDataItem<R extends Rarity> extends ISalvagable, ITooltip
         return (int) (30 * rar.item_tier_power * getLevel());
     }
 
+    public default int getAutoSalvageExpReward() {
+        GearRarity rar = getRarity();
+        return (int) (3 * rar.item_tier_power * getLevel());
+    }
+
     ItemstackDataSaver<? extends ICommonDataItem> getStackSaver();
 
     void saveToStack(ItemStack stack);

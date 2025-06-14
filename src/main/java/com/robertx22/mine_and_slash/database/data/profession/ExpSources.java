@@ -152,15 +152,21 @@ public class ExpSources {
             var lootMods = new LootModifiersList();
 
             int proflvl = Load.player(p).professions.getLevel(pro.GUID());
-            float lvlmulti = MathHelper.clamp((float) proflvl / (float) getLevelOfMastery(), 0.5F, 1F);
+            //float lvlmulti = MathHelper.clamp((float) proflvl / (float) getLevelOfMastery(), 0.5F, 1F);
 
             var fx = LevelUtils.scaleExpReward(exp, Load.player(p).professions.getLevel(pro.id));
 
             float lowRecipeLvlPenalty = 1;
 
-            if (proflvl > getLevelOfMastery()) {
-                int diff = Math.abs(proflvl - getLevelOfMastery());
-                lowRecipeLvlPenalty -= (diff * GameBalanceConfig.get().PROFESSION_EXP_PENALTY_PER_LOWER_LEVEL);
+            // Get player's current tier and item's tier
+            SkillItemTier playerTier = SkillItemTier.fromLevel(proflvl);
+            SkillItemTier itemTier = SkillItemTier.fromLevel(getLevelOfMastery());
+
+            // Only apply penalty if player is in a higher tier than the item
+            if (playerTier.tier > itemTier.tier) {
+                int tierDiff = playerTier.tier - itemTier.tier;
+                // Apply penalty based on tier difference (you may want to adjust this multiplier)
+                lowRecipeLvlPenalty -= (tierDiff * GameBalanceConfig.get().PROFESSION_EXP_PENALTY_PER_LOWER_LEVEL);
 
                 if (lowRecipeLvlPenalty < 0) {
                     lowRecipeLvlPenalty = 0;
@@ -169,12 +175,8 @@ public class ExpSources {
 
 
             lootMods.add(new LootModifier(LootModifierEnum.PROFESSION_BONUS_STAT, Load.Unit(p).getUnit().getCalculatedStat(new ProfExp(pro.id)).getMultiplier()));
-            lootMods.add(new LootModifier(LootModifierEnum.LEVEL_DISTANCE_PENALTY, lvlmulti));
+            //lootMods.add(new LootModifier(LootModifierEnum.LEVEL_DISTANCE_PENALTY, lvlmulti));
             lootMods.add(new LootModifier(LootModifierEnum.LOW_LEVEL_RECIPE_PENALTY, lowRecipeLvlPenalty));
-
-            fx *= Load.Unit(p).getUnit().getCalculatedStat(new ProfExp(pro.id)).getMultiplier();
-            fx *= lvlmulti;
-            fx *= lowRecipeLvlPenalty;
 
 
             for (LootModifier mod : lootMods.all) {

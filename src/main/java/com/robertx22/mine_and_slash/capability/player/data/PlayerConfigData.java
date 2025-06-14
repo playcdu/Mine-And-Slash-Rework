@@ -2,7 +2,9 @@ package com.robertx22.mine_and_slash.capability.player.data;
 
 import com.robertx22.library_of_exile.utils.SoundUtils;
 import com.robertx22.mine_and_slash.config.forge.ServerContainer;
+import com.robertx22.mine_and_slash.database.data.profession.Profession;
 import com.robertx22.mine_and_slash.database.data.rarities.GearRarity;
+import com.robertx22.mine_and_slash.database.registry.ExileDB;
 import com.robertx22.mine_and_slash.gui.inv_gui.actions.auto_salvage.ToggleAutoSalvageRarity;
 import com.robertx22.mine_and_slash.itemstack.ExileStack;
 import com.robertx22.mine_and_slash.mmorpg.registers.common.items.SlashItems;
@@ -121,6 +123,13 @@ public class PlayerConfigData {
 
                 if (doSalvage) {
                     SoundUtils.playSound(player, SoundEvents.EXPERIENCE_ORB_PICKUP, 0.75F, 1.25F);
+
+                    // Give salvage experience to the player's salvaging profession
+                    Profession salvagingProfession = ExileDB.Professions().get("salvaging"); // Adjust profession ID as needed
+                    if (salvagingProfession != null) {
+                        Load.player(player).professions.addExp(player, salvagingProfession.GUID(), data.getAutoSalvageExpReward());
+                    }
+
                     stack.shrink(stack.getCount() + 100);
                     data.getSalvageResult(ex).forEach(e -> {
                         Backpacks backpacks = Load.backpacks(player).getBackpacks();

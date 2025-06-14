@@ -82,7 +82,7 @@ public class GameBalanceConfig implements JsonExileRegistry<GameBalanceConfig>, 
     public double MOB_DMG_POWER_SCALING_BASE = 1;
     public double MOB_HP_POWER_SCALING_BASE = 1;
 
-    public double PROFESSION_EXP_PENALTY_PER_LOWER_LEVEL = 0.02;
+    public double PROFESSION_EXP_PENALTY_PER_LOWER_LEVEL = 0.2;
 
     public int link_1_lvl = 1;
     public int link_2_lvl = 5;
