@@ -630,6 +630,7 @@ proc_profane_explosion
 proc_profane_explosion_any
 proc_shatter
 proj_dmg_received
+proj_spread_randomness
 projectile_barrage
 projectile_cast_time
 projectile_cdr

@@ -19,6 +19,7 @@ has_affix_uncommon
 has_affix_unique
 has_affixes
 has_corrupt_affixes
+has_implicit
 has_infusion
 has_no_enchants
 has_socketed_gem
@@ -34,6 +35,7 @@ is_legendary
 is_map
 is_mythic
 is_not_corrupted
+is_not_uber
 is_pickaxe_tag
 is_rare
 is_runeword
