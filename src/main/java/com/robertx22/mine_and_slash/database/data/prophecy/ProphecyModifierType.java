@@ -1,5 +1,6 @@
 package com.robertx22.mine_and_slash.database.data.prophecy;
 
+import com.robertx22.mine_and_slash.config.forge.ServerContainer;
 import com.robertx22.mine_and_slash.database.data.prophecy.starts.GearProphecy;
 import com.robertx22.mine_and_slash.database.registry.ExileDB;
 import com.robertx22.mine_and_slash.loot.blueprints.GearBlueprint;
@@ -19,7 +20,7 @@ public enum ProphecyModifierType {
 
         @Override
         public float chanceToSpawn() {
-            return 15;
+            return ServerContainer.get().PROPHECY_GEAR_TYPE_CHANCE.get();
         }
 
         @Override
@@ -43,7 +44,7 @@ public enum ProphecyModifierType {
 
         @Override
         public float chanceToSpawn() {
-            return 75;
+            return ServerContainer.get().PROPHECY_JEWEL_RARITY_CHANCE.get();
         }
 
         @Override
@@ -67,7 +68,7 @@ public enum ProphecyModifierType {
 
         @Override
         public float chanceToSpawn() {
-            return 75;
+            return ServerContainer.get().PROPHECY_SKILL_GEM_RARITY_CHANCE.get();
         }
 
         @Override
@@ -93,7 +94,7 @@ public enum ProphecyModifierType {
 
         @Override
         public float chanceToSpawn() {
-            return 75;
+            return ServerContainer.get().PROPHECY_GEAR_RARITY.get();
         }
 
         @Override

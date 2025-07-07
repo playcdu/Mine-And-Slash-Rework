@@ -12,24 +12,32 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.resources.ResourceLocation;
 
 public class ProphecyButton extends ImageButton {
-    static ResourceLocation ID = new ResourceLocation(SlashRef.MODID, "textures/gui/prophecy/icon.png");
+    static ResourceLocation DEFAULT_ID = new ResourceLocation(SlashRef.MODID, "textures/gui/prophecy/icon.png");
 
     ProphecyData data;
+    ResourceLocation iconTexture;
 
-    
+
     public ProphecyButton(ProphecyData data, boolean canTake, int x, int y) {
-        super(x, y, 16, 16, 0, 0, 1, ID, (action) -> {
+        super(x, y, 16, 16, 0, 0, 1, DEFAULT_ID, (action) -> {
             if (canTake) {
                 Packets.sendToServer(new AcceptProphecyPacket(data.uuid));
                 Minecraft.getInstance().setScreen(null);
             }
         });
         this.data = data;
+        this.iconTexture = getIconForProphecyType(data);
+    }
+
+    private ResourceLocation getIconForProphecyType(ProphecyData data) {
+        String iconPath = "textures/gui/prophecy/" + data.start + ".png";
+
+        return new ResourceLocation(SlashRef.MODID, iconPath);
     }
 
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        pGuiGraphics.blit(SlashRef.guiId("prophecy/icon"), getX(), getY(), 0, 0, 16, 16, 16, 16);
+        pGuiGraphics.blit(iconTexture, getX(), getY(), 0, 0, 16, 16, 16, 16);
 
         this.setTooltip(Tooltip.create(TextUTIL.mergeList(data.getTooltip())));
 

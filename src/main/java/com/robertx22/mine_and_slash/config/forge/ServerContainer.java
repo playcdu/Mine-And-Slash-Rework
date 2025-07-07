@@ -115,6 +115,10 @@ public class ServerContainer {
         MOB_LEVEL_VARIANCE = b.defineInRange("MOB_LEVEL_VARIANCE", 3, 0, 100);
 
         PROPHECY_OFFERS_PER_REROLL = b.defineInRange("PROPHECY_OFFERS_PER_REROLL", 18, 1, 18);
+        PROPHECY_GEAR_TYPE_CHANCE = b.defineInRange("PROPHECY_GEAR_TYPE_CHANCE", 15, 0, 100);
+        PROPHECY_JEWEL_RARITY_CHANCE = b.defineInRange("PROPHECY_JEWEL_RARITY_CHANCE", 75, 0, 100);
+        PROPHECY_SKILL_GEM_RARITY_CHANCE = b.defineInRange("PROPHECY_SKILL_GEM_RARITY_CHANCE", 75, 0, 100);
+        PROPHECY_GEAR_RARITY = b.defineInRange("PROPHECY_GEAR_RARITY", 75, 0, 100);
 
 
         BONUS_EXP_PERCENT_PER_HIGHER_LVL_CHARACTERS = b.defineInRange("BONUS_EXP_PERCENT_PER_HIGHER_LVL_CHARACTERS", 10, 0, 1000);
@@ -263,6 +267,11 @@ public class ServerContainer {
     public ForgeConfigSpec.DoubleValue PROPHECY_COIN_DROPRATE;
     public ForgeConfigSpec.DoubleValue OMEN_DROPRATE;
     public ForgeConfigSpec.DoubleValue MAP_DROPRATE;
+
+    public ForgeConfigSpec.IntValue PROPHECY_GEAR_TYPE_CHANCE;
+    public ForgeConfigSpec.IntValue PROPHECY_JEWEL_RARITY_CHANCE;
+    public ForgeConfigSpec.IntValue PROPHECY_SKILL_GEM_RARITY_CHANCE;
+    public ForgeConfigSpec.IntValue PROPHECY_GEAR_RARITY;
 
 
     public ForgeConfigSpec.DoubleValue BLOCK_COST;

@@ -53,7 +53,7 @@ public class ProphecyScreen extends BaseScreen implements INamedScreen {
 
             for (ProphecyData offer : data.rewardOffers) {
 
-                int x = this.guiLeft + 9 + (i * SLOT_SPACING);
+                int x = this.guiLeft + 10 + (i * SLOT_SPACING);
                 int y = this.guiTop + 52 + (yc * SLOT_SPACING);
 
                 this.addRenderableWidget(new ProphecyButton(offer, true, x, y));
