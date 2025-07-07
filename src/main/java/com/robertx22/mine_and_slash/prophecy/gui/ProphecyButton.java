@@ -30,21 +30,7 @@ public class ProphecyButton extends ImageButton {
     }
 
     private ResourceLocation getIconForProphecyType(ProphecyData data) {
-        String iconPath = "textures/gui/prophecy/";
-
-        if (data.start.contains("gear")) {
-            iconPath += "gear.png";
-        } else if (data.start.contains("aura_gem")) {
-            iconPath += "aura_gem.png";
-        } else if (data.start.contains("jewel")) {
-            iconPath += "jewel.png";
-        } else if (data.start.contains("rune")) {
-            iconPath += "rune.png";
-        } else if (data.start.contains("support_gem")) {
-            iconPath += "support_gem.png";
-        } else {
-            iconPath += "icon.png"; // default icon
-        }
+        String iconPath = "textures/gui/prophecy/" + data.start + ".png";
 
         return new ResourceLocation(SlashRef.MODID, iconPath);
     }
