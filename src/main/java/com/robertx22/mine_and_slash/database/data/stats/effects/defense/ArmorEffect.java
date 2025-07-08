@@ -44,13 +44,13 @@ public class ArmorEffect extends InCodeStatEffect<DamageEvent> {
             float EffectiveArmor = armor.getUsableValue(effect.targetData.getUnit(), afterPene, effect.sourceData.getLevel());
             EffectiveArmor = Mth.clamp(EffectiveArmor, 0, armor.getMaxMulti());
             float defense = EffectiveArmor * 100F;
-            effect.getLayer(StatLayers.Defensive.PHYS_MITIGATION, EventData.NUMBER, Side()).reduce(defense);
+            effect.getLayer(StatLayers.Defensive.ARMOR_MITIGATION, EventData.NUMBER, Side()).reduce(defense);
         } else {
             // so it can go in negative too if player has high armor pen
             float EffectiveArmor = armor.getUsableValue(effect.targetData.getUnit(), Math.abs(afterPene), effect.sourceData.getLevel());
             EffectiveArmor = Mth.clamp(EffectiveArmor, 0, armor.getMaxMulti());
             float defense = EffectiveArmor * -100F;
-            effect.getLayer(StatLayers.Defensive.PHYS_MITIGATION, EventData.NUMBER, Side()).reduce(defense);
+            effect.getLayer(StatLayers.Defensive.ARMOR_MITIGATION, EventData.NUMBER, Side()).reduce(defense);
         }
 
         return effect;

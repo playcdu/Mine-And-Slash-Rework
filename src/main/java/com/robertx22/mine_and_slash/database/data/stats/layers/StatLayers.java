@@ -28,10 +28,11 @@ public class StatLayers {
 
         // todo does this work its still confusing and probably buggy!!!
 
-        public static StatLayer PHYS_MITIGATION = new StatLayer("physical_mitigation", "Physical Mitigation", StatLayer.LayerAction.MULTIPLY, 100, 0.1F, STATICS.MAX_FLOAT);
-        public static StatLayer ELEMENTAL_MITIGATION = new StatLayer("elemental_mitigation", "Elemental Mitigation", StatLayer.LayerAction.MULTIPLY, 101, 0.1F, STATICS.MAX_FLOAT);
-        public static StatLayer DAMAGE_REDUCTION = new StatLayer("damage_reduction", "Damage Reduction", StatLayer.LayerAction.MULTIPLY, 102, 0.5F, STATICS.MAX_FLOAT);
-        public static StatLayer DAMAGE_SUPPRESSION = new StatLayer("damage_suppression", "Damage Suppression", StatLayer.LayerAction.MULTIPLY, 103, 0.5F, 1);
+        public static StatLayer ARMOR_MITIGATION = new StatLayer("armor_mitigation", "Armor Mitigation", StatLayer.LayerAction.MULTIPLY, 100, 0.1F, STATICS.MAX_FLOAT);
+        public static StatLayer PHYS_MITIGATION = new StatLayer("physical_mitigation", "Physical Mitigation", StatLayer.LayerAction.MULTIPLY, 101, 0.1F, STATICS.MAX_FLOAT);
+        public static StatLayer ELEMENTAL_MITIGATION = new StatLayer("elemental_mitigation", "Elemental Mitigation", StatLayer.LayerAction.MULTIPLY, 102, 0.1F, STATICS.MAX_FLOAT);
+        public static StatLayer DAMAGE_REDUCTION = new StatLayer("damage_reduction", "Damage Reduction", StatLayer.LayerAction.MULTIPLY, 103, 0.5F, STATICS.MAX_FLOAT);
+        public static StatLayer DAMAGE_SUPPRESSION = new StatLayer("damage_suppression", "Damage Suppression", StatLayer.LayerAction.MULTIPLY, 104, 0.5F, 1);
 
         public static StatLayer FLAT_DAMAGE_REDUCTION = new StatLayer("flat_damage_reduction", "Flat Damage Reduction", StatLayer.LayerAction.ADD, 200, -1000, STATICS.MAX_FLOAT);
 
