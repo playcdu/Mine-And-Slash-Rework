@@ -182,7 +182,7 @@ public enum AllyOrEnemy {
             return false;
         }
     },
-    non_npc_enemies {
+    non_ai_enemies {
         @Override
         public boolean is(Entity caster, LivingEntity target) {
 
@@ -190,14 +190,17 @@ public enum AllyOrEnemy {
                 if (EntityFinder.isTamedByAlly(p, target)) {
                     return false;
                 }
+                if (target.serializeNBT().contains("NoAI")) {
+                    return false;
+                }
                 // Check for villagers and other NPCs
-                var type = Load.Unit(target).getType();
+                /*var type = Load.Unit(target).getType();
                 if (type == EntityTypeUtils.EntityClassification.NPC) {
                     return false;
                 } // failsafe incase mod doesn't use villager class
                 if (target instanceof net.minecraft.world.entity.npc.AbstractVillager) {
                     return false;
-                }
+                }*/
                 if (target instanceof Player) {
                     if (!caster.level().getServer().isPvpAllowed()) {
                         return false;
