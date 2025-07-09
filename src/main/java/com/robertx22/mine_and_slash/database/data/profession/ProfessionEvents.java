@@ -20,15 +20,16 @@ public class ProfessionEvents {
             @Override
             public void accept(ExileEvents.PlayerMineOreEvent e) {
                 Player p = e.player;
+                if (p != null) {
+                    if (!p.level().isClientSide) {
 
-                if (!p.level().isClientSide) {
+                        if (PlayerUTIL.isFake(p)) {
+                            return;
+                        }
 
-                    if (PlayerUTIL.isFake(p)) {
-                        return;
+                        var drops = ExileDB.Professions().get(Professions.MINING).onMineGetBonusDrops(p, Arrays.asList(), e.state);
+                        e.itemsToAddToDrop.addAll(drops);
                     }
-
-                    var drops = ExileDB.Professions().get(Professions.MINING).onMineGetBonusDrops(p, Arrays.asList(), e.state);
-                    e.itemsToAddToDrop.addAll(drops);
                 }
             }
         });
@@ -37,30 +38,34 @@ public class ProfessionEvents {
             @Override
             public void accept(ExileEvents.PlayerMineFarmableBlockEvent e) {
                 Player p = e.player;
-                if (!p.level().isClientSide) {
-                    if (PlayerUTIL.isFake(p)) {
-                        return;
+                if (p != null) {
+                    if (!p.level().isClientSide) {
+                        if (PlayerUTIL.isFake(p)) {
+                            return;
+                        }
+                        var drops = ExileDB.Professions().get(Professions.FARMING).onMineGetBonusDrops(p, e.droppedItems, e.state);
+                        e.itemsToAddToDrop.addAll(drops);
                     }
-                    var drops = ExileDB.Professions().get(Professions.FARMING).onMineGetBonusDrops(p, e.droppedItems, e.state);
-                    e.itemsToAddToDrop.addAll(drops);
                 }
             }
         });
 
         ForgeEvents.registerForgeEvent(ItemFishedEvent.class, x -> {
             Player p = x.getEntity();
-            if (!p.level().isClientSide) {
-                if (PlayerUTIL.isFake(p)) {
-                    return;
-                }
-                var drops = ExileDB.Professions().get(Professions.FISHING).onFish(p);
+            if (p != null) {
+                if (!p.level().isClientSide) {
+                    if (PlayerUTIL.isFake(p)) {
+                        return;
+                    }
+                    var drops = ExileDB.Professions().get(Professions.FISHING).onFish(p);
 
-                if (!drops.isEmpty()) {
-                    // p.sendSystemMessage(Chats.CAUGHT_SOMETHING.locName().withStyle(ChatFormatting.GREEN));
-                }
-                for (ItemStack drop : drops) {
-                    var en = p.spawnAtLocation(drop);
-                    //en.setDeltaMovement(x.getHookEntity().getDeltaMovement());
+                    if (!drops.isEmpty()) {
+                        // p.sendSystemMessage(Chats.CAUGHT_SOMETHING.locName().withStyle(ChatFormatting.GREEN));
+                    }
+                    for (ItemStack drop : drops) {
+                        var en = p.spawnAtLocation(drop);
+                        //en.setDeltaMovement(x.getHookEntity().getDeltaMovement());
+                    }
                 }
             }
         });
