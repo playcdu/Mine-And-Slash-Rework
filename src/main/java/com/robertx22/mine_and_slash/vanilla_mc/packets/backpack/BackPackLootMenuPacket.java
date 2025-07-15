@@ -55,7 +55,11 @@ public class BackPackLootMenuPacket extends MyPacket<BackPackLootMenuPacket> {
                         ItemStack item = slot.getItem();
                         if (item.is(Items.AIR)) continue;
                         if (mode == Mode.LOOT){
-                            backpacks.tryAutoPickup(player, item, false);
+                            if (Load.player(player).config.salvage.trySalvageOnPickup(player, item)) {
+                                item.shrink(100);
+                            } else {
+                                backpacks.tryAutoPickup(player, item);
+                            }
                         } else {
                             turnItemToPickableAndRemove(item, player);
                         }
