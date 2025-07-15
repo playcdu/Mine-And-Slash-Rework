@@ -126,16 +126,15 @@ public abstract class SummonEntity extends TamableAnimal implements RangedAttack
             this.goalSelector.addGoal(5, new RangedBowAttackGoal<>(this, 1.0D, 20, 15F));
         }
 
-        // this.goalSelector.addGoal(6, new RandomSwimmingGoal(this, 1, 1));
+        this.goalSelector.addGoal(6, new RandomSwimmingGoal(this, 1, 1));
         this.goalSelector.addGoal(7, new FollowOwnerGoal(this, 1.0D, 6.0F, 1.0F, false));
-        this.goalSelector.addGoal(8, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(8, new RandomStrollGoal(this, 1.0D));
         this.goalSelector.addGoal(10, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(10, new RandomLookAroundGoal(this));
         //this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
 
         this.targetSelector.addGoal(3, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(4, new OwnerHurtTargetGoal(this));
-
         if (usesMelee()) {
             this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 10, true, true, x -> canAttack(x)));
         }
@@ -156,7 +155,7 @@ public abstract class SummonEntity extends TamableAnimal implements RangedAttack
         if (!pTarget.isAlive()) {
             return false;
         }
-        if (AllyOrEnemy.allies.is(owner, pTarget)) {
+        if (!AllyOrEnemy.summonShouldAttack.is(owner, pTarget)) {
             return false;
         }
         // aggro the focus target, otherwise find something else
@@ -176,6 +175,21 @@ public abstract class SummonEntity extends TamableAnimal implements RangedAttack
 
         return aggroRadius >= distance;
 
+    }
+
+    @Override
+    public boolean canBreatheUnderwater() {
+        return true;
+    }
+
+    @Override
+    public boolean isPushedByFluid() {
+        return false;
+    }
+
+    @Override
+    protected boolean canRide(Entity pVehicle) {
+        return false;
     }
 
     @Nullable

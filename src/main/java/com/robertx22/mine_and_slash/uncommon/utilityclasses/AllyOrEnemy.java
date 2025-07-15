@@ -4,6 +4,7 @@ import com.robertx22.mine_and_slash.database.data.spells.summons.entity.SummonEn
 import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.NeutralMob;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.player.Player;
 
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 public enum AllyOrEnemy {
 
 
-    /*
+
     summonShouldAttack() {
         @Override
         public <T extends LivingEntity> List<T> getMatchingEntities(List<T> list, Entity caster) {
@@ -53,7 +54,7 @@ public enum AllyOrEnemy {
             return false;
         }
     },
-     */
+
 
     allies() {
         @Override

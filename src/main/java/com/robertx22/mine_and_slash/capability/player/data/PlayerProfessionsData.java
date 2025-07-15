@@ -41,6 +41,10 @@ public class PlayerProfessionsData {
     }
 
     public void addExp(Player p, String id, int exp) {
+        addExp(p, id, exp, true);
+    }
+
+    public void addExp(Player p, String id, int exp, boolean applyRestedExp) {
 
         if (exp < 0) {
             ExileLog.get().warn("Tried to give minus profession exp!");
@@ -50,14 +54,17 @@ public class PlayerProfessionsData {
         if (!map.containsKey(id)) {
             map.put(id, new Data());
         }
-        var rested = Load.player(p).rested_xp;
 
-        rested.onGiveProfExp(exp);
+        if (applyRestedExp) {
+            var rested = Load.player(p).rested_xp;
 
-        if (rested.bonusProfExp > 0) {
-            int added = MathHelper.clamp(rested.bonusProfExp, 0, exp);
-            rested.bonusProfExp -= added;
-            exp += added;
+            rested.onGiveProfExp(exp);
+
+            if (rested.bonusProfExp > 0) {
+                int added = MathHelper.clamp(rested.bonusProfExp, 0, exp);
+                rested.bonusProfExp -= added;
+                exp += added;
+            }
         }
 
         var data = map.get(id);

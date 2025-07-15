@@ -124,10 +124,10 @@ public class PlayerConfigData {
                 if (doSalvage) {
                     SoundUtils.playSound(player, SoundEvents.EXPERIENCE_ORB_PICKUP, 0.75F, 1.25F);
 
-                    // Give salvage experience to the player's salvaging profession
+                    // Give salvage experience to the player's salvaging profession (without rested exp bonus)
                     Profession salvagingProfession = ExileDB.Professions().get("salvaging"); // Adjust profession ID as needed
                     if (salvagingProfession != null) {
-                        Load.player(player).professions.addExp(player, salvagingProfession.GUID(), data.getAutoSalvageExpReward());
+                        Load.player(player).professions.addExp(player, salvagingProfession.GUID(), data.getAutoSalvageExpReward(), false);
                     }
 
                     stack.shrink(stack.getCount() + 100);
