@@ -57,7 +57,7 @@ public class GuiOverlays {
             @Override
             public void render(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
 
-                if (ClientConfigs.CLIENT.SPELL_HOTBAR_OVERLAY_TYPE.get() == ClientConfigs.HorizontalOrVertical.HORIZONTAL) {
+                if (ClientConfigs.CLIENT.STATUS_EFFECTS_OVERLAY_TYPE.get() == ClientConfigs.HorizontalOrVertical.HORIZONTAL) {
                     if (ClientConfigs.getConfig().shouldRenderOverlay(OverlayType.EFFECTS_HORIZONTAL)) {
                         EffectsOverlay.render(guiGraphics, true);
                     }
