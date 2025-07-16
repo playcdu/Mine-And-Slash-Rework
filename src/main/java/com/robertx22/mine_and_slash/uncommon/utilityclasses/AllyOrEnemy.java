@@ -42,8 +42,11 @@ public enum AllyOrEnemy {
             if (type == EntityTypeUtils.EntityClassification.NPC) {
                 return false;
             }
-            if (target instanceof NeutralMob) {
-                return false;
+            // For neutral mobs, check if they're angry at the player owner, not the summon
+            if (target instanceof NeutralMob neutralTarget) {
+                if (!neutralTarget.isAngry()) {
+                    return false;
+                }
             }
             if (ServerContainer.get().isEntitySummonBlacklisted(target)) {
                 return false;
