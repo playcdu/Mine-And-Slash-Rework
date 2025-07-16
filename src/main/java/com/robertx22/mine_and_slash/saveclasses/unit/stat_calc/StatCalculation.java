@@ -120,14 +120,22 @@ public class StatCalculation {
                 })
                 .toList();
 
+        int lastPriority = Integer.MIN_VALUE;
+
         for (var en : addToAfterCalcStats) {
             AddToAfterCalcEnd aff = (AddToAfterCalcEnd) en.getValue().GetStat();
-            aff.affectStats(copiedStats, unit.getStats(), en.getValue());
 
-            // Only update snapshot for AddPerPercentOfOther stats that might chain
-            if (aff instanceof AddPerPercentOfOther) {
+            // Get current priority
+            int currentPriority = (aff instanceof AddPerPercentOfOther addStat) ?
+                    addStat.priority : Integer.MAX_VALUE;
+
+            // Only clone if priority has increased (new priority tier)
+            if (currentPriority > lastPriority && lastPriority != Integer.MIN_VALUE) {
                 copiedStats = unit.getStats().clone();
             }
+
+            aff.affectStats(copiedStats, unit.getStats(), en.getValue());
+            lastPriority = currentPriority;
         }
 
         for (StatData stat : unit.getStats().stats.values()) {
