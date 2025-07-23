@@ -18,6 +18,7 @@ public class UniqueGearPart extends BlueprintPart<UniqueGear, GearBlueprint> {
                     .getWrapped()
                     .of(x -> x.rarity.equals(blueprint.rarity.get().GUID()))
                     .of(x -> blueprint.info.map_tier >= x.min_tier)
+                    .of(x -> blueprint.info.level >= x.min_drop_lvl)
                     .of(x -> x.canSpawnInLeague(blueprint.info.league))
                     .of(x -> x.getBaseGear().GUID().equals(blueprint.gearItemSlot.get().GUID()));
 

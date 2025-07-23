@@ -77,6 +77,7 @@ public class ServerContainer {
         COMBAT_TO_PROFESSION_RESTED_XP_GENERATION = b.defineInRange("COMBAT_TO_PROFESSION_RESTED_XP_GENERATION", 0.25, 0, 1);
         PROFESSION_TO_COMBAT_RESTED_XP_GENERATION = b.defineInRange("PROFESSION_TO_COMBAT_RESTED_XP_GENERATION", 0.1, 0, 1);
         RESTED_XP_DEATH_PENALTY = b.defineInRange("RESTED_XP_DEATH_PENALTY", 0.5F, 0, 1);
+        PARTY_EXP_BONUS = b.comment("Additional exp before splitting between players.").defineInRange("PARTY_EXP_BONUS", 0.2F, 0, 1);
 
         FAVOR_DEATH_LOSS = b.defineInRange("favor_death_loss", 50D, 0, 10000);
         MAX_POSSIBLE_FAVOR = b.defineInRange("MAX_POSSIBLE_FAVOR", 10000000, 0, 10000000);
@@ -258,6 +259,7 @@ public class ServerContainer {
     public ForgeConfigSpec.DoubleValue COMBAT_TO_PROFESSION_RESTED_XP_GENERATION;
     public ForgeConfigSpec.DoubleValue PROFESSION_TO_COMBAT_RESTED_XP_GENERATION;
     public ForgeConfigSpec.DoubleValue RESTED_XP_DEATH_PENALTY;
+    public ForgeConfigSpec.DoubleValue PARTY_EXP_BONUS;
 
     public ForgeConfigSpec.DoubleValue UNARMED_ENERGY_COST;
 

@@ -317,7 +317,29 @@ public class MapItemData implements ICommonDataItem<GearRarity> {
             return Arrays.asList();
         }
         int amount = 1;
-        return Arrays.asList(new ItemStack(RarityItems.RARITY_STONE.getOrDefault(getRarity().GUID(), RarityItems.RARITY_STONE.get(IRarity.COMMON_ID)).get(), amount));
+
+        GearRarity mapRarity = getRarity();
+
+        // Find the rarity to use for the stone, capping at tier 2 (Rare)
+        // Find the rarity with item_tier == 2 (Rare)
+        Optional<GearRarity> rareRarityOpt = ExileDB.GearRarities()
+                .getList()
+                .stream()
+                .filter(r -> r.item_tier == 2)
+                .findFirst();
+
+        GearRarity stoneRarity;
+        if (mapRarity.item_tier < 2) {
+            stoneRarity = mapRarity;
+        } else {
+            // If map is Rare or above, use Rare
+            stoneRarity = rareRarityOpt.orElse(mapRarity); // fallback to mapRarity if not found
+        }
+
+        return Arrays.asList(new ItemStack(
+                RarityItems.RARITY_STONE.getOrDefault(stoneRarity.GUID(), RarityItems.RARITY_STONE.get(IRarity.COMMON_ID)).get(),
+                amount
+        ));
     }
 
     @Override

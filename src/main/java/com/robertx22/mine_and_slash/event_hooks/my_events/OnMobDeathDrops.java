@@ -151,7 +151,7 @@ public class OnMobDeathDrops extends EventConsumer<ExileEvents.OnMobDeath> {
                 members = 4;
             }
 
-            float teamMulti = 1 + (0.2F * members);
+            float teamMulti = (float) (1 + (ServerContainer.get().PARTY_EXP_BONUS.get() * members));
 
             exp *= teamMulti;
 

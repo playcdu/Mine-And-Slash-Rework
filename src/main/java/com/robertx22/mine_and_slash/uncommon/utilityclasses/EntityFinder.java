@@ -187,14 +187,6 @@ public class EntityFinder {
 
         public Setup<T> searchFor(AllyOrEnemy f) {
             this.entityPredicate = f;
-
-            if (f == AllyOrEnemy.allies) {
-                if (this.caster instanceof Player p) {
-                    if (Load.player(p).config.isConfigEnabled(PlayerConfigData.Config.EVERYONE_IS_ALLY)) {
-                        this.entityPredicate = AllyOrEnemy.all;
-                    }
-                }
-            }
             return this;
         }
 
