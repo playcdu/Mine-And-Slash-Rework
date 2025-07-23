@@ -49,6 +49,7 @@ import com.robertx22.mine_and_slash.uncommon.datasaving.StackSaving;
 import com.robertx22.mine_and_slash.uncommon.effectdatas.rework.action.StatEffect;
 import com.robertx22.mine_and_slash.uncommon.effectdatas.rework.condition.StatCondition;
 import com.robertx22.mine_and_slash.uncommon.interfaces.data_items.VanillaRarities;
+import com.robertx22.test.test2.SchemaTest;
 import net.minecraft.ChatFormatting;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -86,6 +87,7 @@ public class MMORPG {
     public static ModRequiredRegisterInfo REGISTER_INFO = new ModRequiredRegisterInfo(SlashRef.MODID);
 
     public static String formatNumber(float num) {
+
         if (num < ClientConfigs.getConfig().SHOW_DECIMALS_ON_NUMBER_SMALLER_THAN.get()) {
             return DECIMAL_FORMAT.format(num);
         } else {
@@ -122,6 +124,9 @@ public class MMORPG {
     );
 
     public MMORPG() {
+
+        SchemaTest.run();
+
         final IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         OrderedModConstructor.register(new MnsConstructor(SlashRef.MODID), bus);
 
