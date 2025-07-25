@@ -33,6 +33,7 @@ public class JeiIntegration implements IModPlugin {
     }
 
     public static HashMap<String, RecipeType<ProfessionRecipe>> map = new HashMap<>();
+    public static RecipeType<com.robertx22.mine_and_slash.database.data.runewords.RunewordRecipe> runewordsRecipeType = RecipeType.create(SlashRef.MODID, "runewords", com.robertx22.mine_and_slash.database.data.runewords.RunewordRecipe.class);
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
@@ -45,6 +46,8 @@ public class JeiIntegration implements IModPlugin {
             Profession pro = ExileDB.Professions().get(en.getKey());
             registration.addRecipeCategories(new CraftingCategory(pro.id, helper, en.getValue(), pro.locName()));
         }
+
+        registration.addRecipeCategories(new RunewordCategory(helper, runewordsRecipeType));
     }
 
     @Override
@@ -107,6 +110,7 @@ public class JeiIntegration implements IModPlugin {
             registration.addRecipes(en.getValue(), list);
         }
 
+        registration.addRecipes(runewordsRecipeType, RunewordRecipes.Generate(ExileDB.RuneWords()));
     }
 
     public void init() {

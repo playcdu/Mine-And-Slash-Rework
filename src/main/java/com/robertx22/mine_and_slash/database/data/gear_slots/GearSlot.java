@@ -133,43 +133,7 @@ public class GearSlot implements JsonExileRegistry<GearSlot>, IAutoGson<GearSlot
                     return true;
                 }
 
-                if (item instanceof ArmorItem) {
-                    EquipmentSlot eqslot = ((ArmorItem) item).getEquipmentSlot();
-                    if (eqslot == EquipmentSlot.CHEST && id.equals(GearSlots.CHEST)) {
-                        bool = true;
-                    } else if (eqslot == EquipmentSlot.LEGS && id.equals(GearSlots.PANTS)) {
-                        bool = true;
-                    } else if (eqslot == EquipmentSlot.HEAD && id.equals(GearSlots.HELMET)) {
-                        bool = true;
-                    } else if (eqslot == EquipmentSlot.FEET && id.equals(GearSlots.BOOTS)) {
-                        bool = true;
-                    }
-
-                } else if (id.equals(GearSlots.SWORD)) {
-                    bool = item instanceof SwordItem;
-                } else if (id.equals(GearSlots.BOW)) {
-                    bool = item instanceof BowItem;
-                } else if (id.equals(GearSlots.SHIELD)) {
-                    bool = item instanceof ShieldItem;
-                } else if (id.equals(GearSlots.TOTEM)) {
-                    bool = item instanceof DodgeOffhandItem;
-                } else if (id.equals(GearSlots.TOME)) {
-                    bool = item instanceof TomeItem;
-                } else if (id.equals(GearSlots.CROSBOW)) {
-                    bool = item instanceof CrossbowItem;
-                } else if (id.equals(GearSlots.STAFF)) {
-                    bool = item instanceof StaffWeapon;
-                } else if (id.equals(GearSlots.TRIDENT)) {
-                    bool = item instanceof TridentItem;
-                } else if (id.equals(GearSlots.NECKLACE)) {
-                    bool = CuriosApi.getCuriosHelper()
-                            .getCurioTags(item)
-                            .contains(RefCurio.NECKLACE);
-                } else if (id.equals(GearSlots.RING)) {
-                    bool = CuriosApi.getCuriosHelper()
-                            .getCurioTags(item)
-                            .contains(RefCurio.RING);
-                }
+                bool = isItemTypeOfThisSlot(item, id);
             }
 
             CACHED_GEAR_SLOTS.get(id).put(item, bool);
@@ -182,6 +146,48 @@ public class GearSlot implements JsonExileRegistry<GearSlot>, IAutoGson<GearSlot
 
         return false;
 
+    }
+
+    public static boolean isItemTypeOfThisSlot(Item item, String id) {
+        var bool = false;
+        if (item instanceof ArmorItem) {
+            EquipmentSlot eqslot = ((ArmorItem) item).getEquipmentSlot();
+            if (eqslot == EquipmentSlot.CHEST && id.equals(GearSlots.CHEST)) {
+                bool = true;
+            } else if (eqslot == EquipmentSlot.LEGS && id.equals(GearSlots.PANTS)) {
+                bool = true;
+            } else if (eqslot == EquipmentSlot.HEAD && id.equals(GearSlots.HELMET)) {
+                bool = true;
+            } else if (eqslot == EquipmentSlot.FEET && id.equals(GearSlots.BOOTS)) {
+                bool = true;
+            }
+
+        } else if (id.equals(GearSlots.SWORD)) {
+            bool = item instanceof SwordItem;
+        } else if (id.equals(GearSlots.BOW)) {
+            bool = item instanceof BowItem;
+        } else if (id.equals(GearSlots.SHIELD)) {
+            bool = item instanceof ShieldItem;
+        } else if (id.equals(GearSlots.TOTEM)) {
+            bool = item instanceof DodgeOffhandItem;
+        } else if (id.equals(GearSlots.TOME)) {
+            bool = item instanceof TomeItem;
+        } else if (id.equals(GearSlots.CROSBOW)) {
+            bool = item instanceof CrossbowItem;
+        } else if (id.equals(GearSlots.STAFF)) {
+            bool = item instanceof StaffWeapon;
+        } else if (id.equals(GearSlots.TRIDENT)) {
+            bool = item instanceof TridentItem;
+        } else if (id.equals(GearSlots.NECKLACE)) {
+            bool = CuriosApi.getCuriosHelper()
+                    .getCurioTags(item)
+                    .contains(RefCurio.NECKLACE);
+        } else if (id.equals(GearSlots.RING)) {
+            bool = CuriosApi.getCuriosHelper()
+                    .getCurioTags(item)
+                    .contains(RefCurio.RING);
+        }
+        return bool;
     }
 
     @Override
