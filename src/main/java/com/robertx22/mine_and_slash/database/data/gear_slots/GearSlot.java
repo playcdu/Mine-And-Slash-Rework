@@ -20,6 +20,8 @@ import net.minecraft.world.item.*;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import java.util.HashMap;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class GearSlot implements JsonExileRegistry<GearSlot>, IAutoGson<GearSlot>, IAutoLocName {
@@ -75,6 +77,10 @@ public class GearSlot implements JsonExileRegistry<GearSlot>, IAutoGson<GearSlot
         return getSlotOf(item, stack.getTags());
     }
 
+    public static GearSlot getSlotOf(Item item) {
+        return getSlotOf(item, Stream.empty());
+    }
+
     public static GearSlot getSlotOf(Item item, Stream<TagKey<Item>> tags) {
         if (CACHED.containsKey(item)) {
             return CACHED.get(item);
@@ -84,8 +90,10 @@ public class GearSlot implements JsonExileRegistry<GearSlot>, IAutoGson<GearSlot
             return CACHED.get(item);
         }
 
+        var tagList = tags.collect(Collectors.toSet());
+
         for (GearSlot slot : ExileDB.GearSlots().getList()) {
-            if (isItemOfThisSlot(slot, item, tags)) {
+            if (isItemOfThisSlot(slot, item, tagList)) {
                 CACHED.put(item, slot);
                 return slot;
             }
@@ -97,11 +105,11 @@ public class GearSlot implements JsonExileRegistry<GearSlot>, IAutoGson<GearSlot
     }
 
     public static boolean isItemOfThisSlot(GearSlot gearSlot, Item item) {
-        return isItemOfThisSlot(gearSlot, item, Stream.empty());
+        return isItemOfThisSlot(gearSlot, item, Set.of());
     }
 
     // has to use ugly stuff like this cus datapacks.
-    public static boolean isItemOfThisSlot(GearSlot slot, Item item, Stream<TagKey<Item>> tags) {
+    public static boolean isItemOfThisSlot(GearSlot slot, Item item, Set<TagKey<Item>> tags) {
         if (item == Items.AIR) {
             return false;
         }
@@ -137,7 +145,7 @@ public class GearSlot implements JsonExileRegistry<GearSlot>, IAutoGson<GearSlot
                 }
             } else {
 
-                if (tags.anyMatch(t -> t.equals(slot.getItemTag()))) {
+                if (tags.contains(slot.getItemTag())) {
                     return true;
                 }
 
