@@ -48,9 +48,9 @@ public class EntityStatusEffectsData {
 
         if (en.tickCount % 80 == 0) {
             // Prevent keeping e.g. auras and stances after respeccing
-            // Has to string compare caster UUID per effect to see if it was us, so it's done infrequently
+            // Has to string compare spell UUIDs to look up the new spell level, so it's done infrequently
             exileMap.entrySet().removeIf(x -> {
-                if (x.getValue().shouldRemove() || !x.getValue().stillOwnsSpell(en)) {
+                if (x.getValue().shouldRemove() || x.getValue().isSpellNoLongerAllocated(en)) {
                     removed.add(ExileDB.ExileEffects().get(x.getKey()));
                     return true;
                 }

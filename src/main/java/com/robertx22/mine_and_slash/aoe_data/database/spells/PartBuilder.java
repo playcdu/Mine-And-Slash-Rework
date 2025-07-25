@@ -279,6 +279,20 @@ public class PartBuilder {
         return c;
     }
 
+    public static ComponentPart giveSelfExileEffect(String effect) {
+        ComponentPart c = new ComponentPart();
+        c.acts.add(SpellAction.EXILE_EFFECT.create(effect, GiveOrTake.GIVE_STACKS));
+        c.targets.add(BaseTargetSelector.CASTER.create());
+        return c;
+    }
+
+    public static ComponentPart giveSelfExileEffect(EffectCtx ctx) {
+        ComponentPart c = new ComponentPart();
+        c.acts.add(SpellAction.EXILE_EFFECT.create(ctx.resourcePath, GiveOrTake.GIVE_STACKS));
+        c.targets.add(BaseTargetSelector.CASTER.create());
+        return c;
+    }
+
     public static ComponentPart giveSelfEffect(MobEffect effect, Double dura) {
         ComponentPart c = new ComponentPart();
         c.acts.add(SpellAction.POTION.createGive(effect, dura));
@@ -292,7 +306,6 @@ public class PartBuilder {
         c.targets.add(BaseTargetSelector.AOE.alliesInRadius(radius));
         return c;
     }
-
 
     public static ComponentPart giveExileEffectToAlliesInRadius(Double radius, String effect, Double dura) {
         ComponentPart c = new ComponentPart();

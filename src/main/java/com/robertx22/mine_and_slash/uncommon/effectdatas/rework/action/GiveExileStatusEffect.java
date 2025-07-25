@@ -34,7 +34,7 @@ public class GiveExileStatusEffect extends StatEffect {
 
         ExilePotionEvent potionEvent = EventBuilder.ofEffect(new CalculatedSpellData(null), event.getSide(statSource), event.getSide(give_to), Load.Unit(event.getSide(statSource))
                         .getLevel(), ExileDB.ExileEffects()
-                        .get(effect), GiveOrTake2.give, seconds * 20)
+                        .get(effect), GiveOrTake2.give, seconds * 20, false)
                 .set(x -> {
                     if (event.isSpell()) {
                         x.data.setString(EventData.SPELL, event.getSpell().GUID());

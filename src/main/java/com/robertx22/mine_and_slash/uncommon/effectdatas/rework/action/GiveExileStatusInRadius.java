@@ -49,7 +49,7 @@ public class GiveExileStatusInRadius extends StatEffect {
                 .forEach(x -> {
 
                     ExilePotionEvent potionEvent = EventBuilder.ofEffect(new CalculatedSpellData(null), en, x, Load.Unit(en)
-                                    .getLevel(), eff, GiveOrTake2.give, seconds * 20)
+                                    .getLevel(), eff, GiveOrTake2.give, seconds * 20, false)
                             .build();
                     potionEvent.Activate();
 

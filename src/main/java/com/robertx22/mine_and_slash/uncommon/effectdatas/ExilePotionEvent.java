@@ -28,7 +28,7 @@ public class ExilePotionEvent extends EffectEvent {
 
     CalculatedSpellData calc;
 
-    public ExilePotionEvent(CalculatedSpellData calc, int lvl, ExileEffect effect, GiveOrTake2 giveOrTake, LivingEntity caster, LivingEntity target, int tickDuration) {
+    public ExilePotionEvent(CalculatedSpellData calc, int lvl, ExileEffect effect, GiveOrTake2 giveOrTake, LivingEntity caster, LivingEntity target, int tickDuration, boolean infinite) {
         super(1, caster, target);
         this.lvl = lvl;
         this.calc = calc;
@@ -37,7 +37,7 @@ public class ExilePotionEvent extends EffectEvent {
         this.data.setString(EventData.GIVE_OR_TAKE, giveOrTake.name());
         this.data.setString(EventData.EXILE_EFFECT, effect.GUID());
         this.data.setupNumber(EventData.EFFECT_DURATION_TICKS, tickDuration);
-
+        this.data.setBoolean(EventData.EFFECT_IS_INFINITE, infinite);
     }
 
     @Override
@@ -75,12 +75,13 @@ public class ExilePotionEvent extends EffectEvent {
 
         }
 
-
+        extraData.self_cast = source == target;
         extraData.caster_uuid = source.getStringUUID();
         extraData.spell_id = this.spellid;
         extraData.str_multi = data.getNumber();
         extraData.calcSpell = this.calc;
         extraData.ticks_left = (int) data.getNumber(EventData.EFFECT_DURATION_TICKS).number;
+        extraData.is_infinite = data.getBoolean(EventData.EFFECT_IS_INFINITE);
 
         if (extraData.stacks < 1) {
             Load.Unit(target).getStatusEffectsData().delete(effect);

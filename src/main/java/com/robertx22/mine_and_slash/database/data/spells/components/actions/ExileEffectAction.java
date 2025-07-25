@@ -37,7 +37,7 @@ public class ExileEffectAction extends SpellAction {
     }
 
     public ExileEffectAction() {
-        super(Arrays.asList(EXILE_POTION_ID, COUNT, POTION_ACTION, POTION_DURATION));
+        super(Arrays.asList(EXILE_POTION_ID, COUNT, POTION_ACTION)); // optional POTION_DURATION
     }
 
     @Override
@@ -48,8 +48,9 @@ public class ExileEffectAction extends SpellAction {
             GiveOrTake action = data.getPotionAction();
             int count = data.get(COUNT)
                     .intValue();
-            int duration = data.get(POTION_DURATION)
+            int duration = data.getOrDefault(POTION_DURATION, 0.0)
                     .intValue();
+            boolean infinite = !data.has(POTION_DURATION);
 
             float chance = data.getOrDefault(CHANCE, 100D).floatValue();
 
@@ -57,7 +58,7 @@ public class ExileEffectAction extends SpellAction {
 
                 if (RandomUtils.roll(chance)) {
                     ExilePotionEvent potionEvent = EventBuilder.ofEffect(ctx.calculatedSpellData, ctx.caster, t, Load.Unit(ctx.caster)
-                                    .getLevel(), potion, action.getOther(), duration)
+                                    .getLevel(), potion, action.getOther(), duration, infinite)
                             .setSpell(ctx.calculatedSpellData.getSpell())
                             .set(x -> x.data.getNumber(EventData.STACKS).number = count)
                             .build();
@@ -90,6 +91,15 @@ public class ExileEffectAction extends SpellAction {
         dmg.type = GUID();
         dmg.put(COUNT, 1D);
         dmg.put(POTION_DURATION, duration);
+        dmg.put(POTION_ACTION, action.name());
+        dmg.put(EXILE_POTION_ID, id);
+        return dmg;
+    }
+
+    public MapHolder create(String id, GiveOrTake action) {
+        MapHolder dmg = new MapHolder();
+        dmg.type = GUID();
+        dmg.put(COUNT, 1D);
         dmg.put(POTION_ACTION, action.name());
         dmg.put(EXILE_POTION_ID, id);
         return dmg;

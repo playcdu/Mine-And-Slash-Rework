@@ -32,7 +32,7 @@ public class RemoveExileEffectAction extends StatEffect {
     public void activate(EffectEvent event, EffectSides statSource, StatData data, Stat stat) {
         ExilePotionEvent potionEvent = EventBuilder.ofEffect(new CalculatedSpellData(null), event.getSide(statSource), event.getSide(remove_from), Load.Unit(event.getSide(statSource))
                         .getLevel(), ExileDB.ExileEffects()
-                        .get(effect), GiveOrTake2.take, 1)
+                        .get(effect), GiveOrTake2.take, 1, false)
                 .set(x -> x.data.getNumber(EventData.STACKS).number = stacks)
                 .build();
         potionEvent.Activate();
