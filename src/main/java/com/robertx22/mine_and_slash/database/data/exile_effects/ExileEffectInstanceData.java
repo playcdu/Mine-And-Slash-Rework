@@ -14,19 +14,34 @@ public class ExileEffectInstanceData {
 
     public CalculatedSpellData calcSpell = new CalculatedSpellData(null);
 
+    public boolean self_cast = false;
+    public boolean is_infinite = false;
     public String caster_uuid = "";
     public String spell_id = "";
     public int stacks = 0;
     public float str_multi = 1;
     public int ticks_left = 0;
 
-
-    public boolean shouldRemove() {
-        return ticks_left < 1 || stacks < 1;
+    public boolean isSpellNoLongerAllocated(LivingEntity en) {
+        if (self_cast) {
+            Spell spell = getSpell();
+            if (spell != null && spell.getLevelOf(en) < 1) {
+                return true;
+            }
+        }
+        return false;
     }
 
+    public boolean shouldRemove() {
+        return stacks < 1 || (!is_infinite && ticks_left < 1);
+    }
 
     public String getDurationString() {
+        if (is_infinite) {
+            // Infinity symbol
+            return "\u221E";
+        }
+
         int ticks = ticks_left;
         int sec = ticks / 20;
         String text = (int) sec + "s";

@@ -36,6 +36,8 @@ public class ExileEffectAction extends SpellAction {
         }
     }
 
+    public static Double INFINITE_DURATION = -1D;
+
     public ExileEffectAction() {
         super(Arrays.asList(EXILE_POTION_ID, COUNT, POTION_ACTION, POTION_DURATION));
     }
@@ -50,6 +52,7 @@ public class ExileEffectAction extends SpellAction {
                     .intValue();
             int duration = data.get(POTION_DURATION)
                     .intValue();
+            boolean infinite = data.get(POTION_DURATION).equals(INFINITE_DURATION);
 
             float chance = data.getOrDefault(CHANCE, 100D).floatValue();
 
@@ -57,7 +60,7 @@ public class ExileEffectAction extends SpellAction {
 
                 if (RandomUtils.roll(chance)) {
                     ExilePotionEvent potionEvent = EventBuilder.ofEffect(ctx.calculatedSpellData, ctx.caster, t, Load.Unit(ctx.caster)
-                                    .getLevel(), potion, action.getOther(), duration)
+                                    .getLevel(), potion, action.getOther(), duration, infinite)
                             .setSpell(ctx.calculatedSpellData.getSpell())
                             .set(x -> x.data.getNumber(EventData.STACKS).number = count)
                             .build();

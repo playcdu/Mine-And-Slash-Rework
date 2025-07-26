@@ -17,8 +17,8 @@ public class EventBuilder<T extends EffectEvent> {
 
     protected T event;
 
-    public static EventBuilder<ExilePotionEvent> ofEffect(CalculatedSpellData calc, LivingEntity caster, LivingEntity target, int lvl, ExileEffect effect, GiveOrTake2 giveOrTake, int ticks) {
-        ExilePotionEvent event = new ExilePotionEvent(calc, lvl, effect, giveOrTake, caster, target, ticks);
+    public static EventBuilder<ExilePotionEvent> ofEffect(CalculatedSpellData calc, LivingEntity caster, LivingEntity target, int lvl, ExileEffect effect, GiveOrTake2 giveOrTake, int ticks, boolean infinite) {
+        ExilePotionEvent event = new ExilePotionEvent(calc, lvl, effect, giveOrTake, caster, target, ticks, infinite);
         EventBuilder<ExilePotionEvent> b = new EventBuilder();
         b.event = event;
         return b;

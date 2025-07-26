@@ -293,7 +293,6 @@ public class PartBuilder {
         return c;
     }
 
-
     public static ComponentPart giveExileEffectToAlliesInRadius(Double radius, String effect, Double dura) {
         ComponentPart c = new ComponentPart();
         c.acts.add(SpellAction.EXILE_EFFECT.create(effect, GiveOrTake.GIVE_STACKS, dura));

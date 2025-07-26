@@ -46,13 +46,25 @@ public class EntityStatusEffectsData {
         // todo this is probably bit laggy per tick no?
         List<ExileEffect> removed = new ArrayList<>();
 
-        exileMap.entrySet().removeIf(x -> {
-            boolean bo = x.getValue().shouldRemove();
-            if (bo) {
-                removed.add(ExileDB.ExileEffects().get(x.getKey()));
-            }
-            return bo;
-        });
+        if (en.tickCount % 80 == 0) {
+            // Prevent keeping e.g. auras and stances after respeccing
+            // Has to string compare spell UUIDs to look up the new spell level, so it's done infrequently
+            exileMap.entrySet().removeIf(x -> {
+                if (x.getValue().shouldRemove() || x.getValue().isSpellNoLongerAllocated(en)) {
+                    removed.add(ExileDB.ExileEffects().get(x.getKey()));
+                    return true;
+                }
+                return false;
+            });
+        } else {
+            exileMap.entrySet().removeIf(x -> {
+                if (x.getValue().shouldRemove()) {
+                    removed.add(ExileDB.ExileEffects().get(x.getKey()));
+                    return true;
+                }
+                return false;
+            });
+        }
 
         for (ExileEffect eff : removed) {
             eff.onRemove(en);
