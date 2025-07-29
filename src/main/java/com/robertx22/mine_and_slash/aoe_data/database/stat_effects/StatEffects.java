@@ -151,7 +151,7 @@ public class StatEffects implements ExileRegistryInit {
     public static StatEffect PROJECTILE_COUNT = new AddToNumberEffect("proj_count", EventData.BONUS_PROJECTILES, NumberProvider.ofStatData());
     public static StatEffect BONUS_CHAINS = new AddToNumberEffect("bonus_chains", EventData.BONUS_CHAINS, NumberProvider.ofStatData());
     public static StatEffect DURATION_INCREASE = new IncreaseNumberByPercentEffect(EventData.DURATION_MULTI);
-    public static StatEffect AGGRO_INCREASE = new IncreaseNumberByPercentEffect(EventData.AGGRO_RADIUS);
+    public static StatEffect AGGRO_INCREASE = new IncreaseNumberByPercentEffect(EventData.AGGRO_RADIUS_MULTI);
     public static StatEffect DECREASE_CAST_TIME = new DecreaseNumberByPercentEffect(EventData.CAST_TICKS);
     public static StatEffect INCREASE_AREA = new IncreaseNumberByPercentEffect(EventData.AREA_MULTI);
     public static StatEffect APPLY_CAST_SPEED_TO_CD = new ApplyCooldownAsCastTimeEffect();

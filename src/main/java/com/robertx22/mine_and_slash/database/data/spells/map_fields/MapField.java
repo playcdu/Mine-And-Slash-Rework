@@ -49,7 +49,7 @@ public class MapField<T> implements IGUID {
     public static MapField<Double> RANDOM_Y_OFFSET = make("random_y_offset");
     public static MapField<Double> RANDOM_X_OFFSET = make("random_x_offset");
     public static MapField<Double> RANDOM_Z_OFFSET = make("random_z_offset");
-
+  
     // string
     public static MapField<String> PROJECTILE_ENTITY = make("proj_en");
     public static MapField<String> SUMMONED_PET_ID = make("summon_id");

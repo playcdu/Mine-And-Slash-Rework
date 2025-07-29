@@ -67,6 +67,7 @@ public class EventData {
     public static String BONUS_CHAINS = "bonus_chains";
     public static String DURATION_MULTI = "duration_multi";
     public static String AGGRO_RADIUS = "aggro_radius";
+    public static String AGGRO_RADIUS_MULTI = "aggro_radius_multi";
 
     private boolean isFrozen = false;
 
