@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class LevelUtils {
 
@@ -66,6 +67,28 @@ public class LevelUtils {
     public static String OBELISK_DIM = "ancient_obelisks:obelisk";
     public static String HARVEST_DIM = "the_harvest:harvest";
 
+    private static int getLowestPartyMemberLevelNearby(Player nearestPlayer) {
+        if (nearestPlayer == null) {
+            return 1;
+        }
+        List<Player> partyMembers = TeamUtils.getOnlineTeamMembersInRange(nearestPlayer);
+
+        if (partyMembers == null || partyMembers.isEmpty()) {
+            // Not in a party, or no one in range, fallback to nearest player's level
+            return Load.Unit(nearestPlayer).getLevel();
+        }
+
+        int minLevel = Load.Unit(nearestPlayer).getLevel();
+        for (Player p : partyMembers) {
+            int lvl = Load.Unit(p).getLevel();
+            if (lvl < minLevel) {
+                minLevel = lvl;
+            }
+        }
+
+        return minLevel;
+    }
+
     public static LevelInfo determineLevel(@Nullable LivingEntity en, Level world, BlockPos pos, @Nullable Player nearestPlayer, boolean usevariance) {
 
         LevelInfo info = new LevelInfo();
@@ -100,13 +123,17 @@ public class LevelUtils {
         DimensionConfig dimConfig = ExileDB.getDimensionConfig(world);
 
         if ((scaletoPlayer || ServerContainer.get().SCALE_MOB_LEVEL_TO_NEAREST_PLAYER.get()) && nearestPlayer != null) {
-            info.set(LevelInfo.LevelSource.NEAREST_PLAYER_CONFIG, Load.Unit(nearestPlayer).getLevel());
+            // Use the lowest party member level within PARTY_RADIUS
+            int lowestLevel = getLowestPartyMemberLevelNearby(nearestPlayer);
+            info.set(LevelInfo.LevelSource.NEAREST_PLAYER_CONFIG, lowestLevel);
         } else {
             if (isInMinLevelArea(sw, pos, dimConfig)) {
                 info.set(LevelInfo.LevelSource.MIN_LEVEL_AREA, dimConfig.min_lvl);
             } else {
                 if (dimConfig.scale_to_nearest_player && nearestPlayer != null) {
-                    info.set(LevelInfo.LevelSource.NEAREST_PLAYER, Load.Unit(nearestPlayer).getLevel());
+                    // Use the lowest party member level within PARTY_RADIUS
+                    int lowestLevel = getLowestPartyMemberLevelNearby(nearestPlayer);
+                    info.set(LevelInfo.LevelSource.NEAREST_PLAYER, lowestLevel);
                 } else {
                     info.set(LevelInfo.LevelSource.DISTANCE_FROM_SPAWN, determineLevelPerDistanceFromSpawn(sw, pos, dimConfig));
                 }

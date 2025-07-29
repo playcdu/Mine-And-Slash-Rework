@@ -8,6 +8,7 @@ import com.robertx22.library_of_exile.database.league.League;
 import com.robertx22.library_of_exile.database.league.LibLeagues;
 import com.robertx22.library_of_exile.events.base.ExileEvents;
 import com.robertx22.mine_and_slash.capability.entity.EntityData;
+import com.robertx22.mine_and_slash.config.forge.ServerContainer;
 import com.robertx22.mine_and_slash.database.data.stats.types.loot.TreasureQuantity;
 import com.robertx22.mine_and_slash.database.data.stats.types.misc.ExtraMobDropsStat;
 import com.robertx22.mine_and_slash.database.holders.MnsRelicStats;
@@ -16,6 +17,7 @@ import com.robertx22.mine_and_slash.loot.generators.BaseLootGen;
 import com.robertx22.mine_and_slash.maps.MapData;
 import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import com.robertx22.mine_and_slash.uncommon.utilityclasses.LevelUtils;
+import com.robertx22.mine_and_slash.uncommon.utilityclasses.TeamUtils;
 import com.robertx22.mine_and_slash.uncommon.utilityclasses.WorldUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -223,6 +225,16 @@ public class LootInfo {
         }
 
         if (this.playerEntityData != null) {
+
+            // Add party/team bonus: +x% per nearby online team member (excluding self)
+            if (player != null) {
+                java.util.List<Player> teamMembers = TeamUtils.getOnlineTeamMembersInRange(player);
+                int partyBonus = teamMembers.size() - 1;
+                if (partyBonus > 0) {
+                    float teamBonus = (float) (1.0f + (partyBonus * ServerContainer.get().PARTY_DROP_BONUS.get()));
+                    lootMods.add(new LootModifier(LootModifierEnum.TEAM_BONUS, teamBonus));
+                }
+            }
 
             if (playerEntityData.getLevel() < 10) {
                 lootMods.add(new LootModifier(LootModifierEnum.LOW_LEVEL_BOOST, 2));

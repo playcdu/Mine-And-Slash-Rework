@@ -22,6 +22,7 @@ public enum LootModifierEnum implements IAutoLocName {
     MOB_BONUS_LOOT_STAT("Mob Bonus Loot Stat"),
     MOB_RARITY("Mob Rarity"),
     LOW_LEVEL_BOOST("Low Level"),
+    TEAM_BONUS("Party Bonus"),
     FAVOR("Favor Rank"),
     PLAYER_LOOT_QUANTITY("Player Loot Quantity"),
     PLAYER_BONUS_EXP("Player Exp Bonus"),
