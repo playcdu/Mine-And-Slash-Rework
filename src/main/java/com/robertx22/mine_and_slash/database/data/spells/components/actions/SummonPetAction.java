@@ -1,6 +1,7 @@
 package com.robertx22.mine_and_slash.database.data.spells.components.actions;
 
 import com.robertx22.mine_and_slash.aoe_data.database.spells.SummonType;
+import com.robertx22.mine_and_slash.capability.entity.SummonedPetData;
 import com.robertx22.mine_and_slash.database.data.spells.components.MapHolder;
 import com.robertx22.mine_and_slash.database.data.spells.components.Spell;
 import com.robertx22.mine_and_slash.database.data.spells.map_fields.MapField;
@@ -57,7 +58,8 @@ public class SummonPetAction extends SpellAction {
             aggroRadius *= ctx.calculatedSpellData.data.getNumber(EventData.AGGRO_RADIUS, 1).number;
 
 
-            Load.Unit(en).summonedPetData.setup(ctx.calculatedSpellData.getSpell(), duration, aggroRadius);
+            boolean counts = data.getOrDefault(MapField.COUNTS_TOWARDS_MAX_SUMMONS, true);
+            Load.Unit(en).summonedPetData.setup(ctx.calculatedSpellData.getSpell(), duration, aggroRadius, counts);
 
 
             Load.Unit(en).SetMobLevelAtSpawn((Player) ctx.caster);
@@ -69,10 +71,6 @@ public class SummonPetAction extends SpellAction {
 
             ctx.world.addFreshEntity(en);
 
-
-            boolean counts = data.getOrDefault(MapField.COUNTS_TOWARDS_MAX_SUMMONS, true);
-            SummonType summonType = data.getSummonType();
-
             if (counts) {
                 int maxTotal = (int) ctx.calculatedSpellData.data.getNumber(EventData.BONUS_TOTAL_SUMMONS, 0).number;
                 despawnIfExceededMaximumSummons(ctx.caster, maxTotal);
@@ -83,28 +81,30 @@ public class SummonPetAction extends SpellAction {
     }
 
     public static void despawnIfExceededMaximumSummons(LivingEntity caster, int max) {
-
-
-        int current = 0;
-
-        List<SummonEntity> list = new ArrayList<>();
+        List<SummonToRemove> list = new ArrayList<>();
 
         for (SummonEntity en : EntityFinder.start(caster, SummonEntity.class, caster.blockPosition()).searchFor(AllyOrEnemy.all).radius(100).build()) {
-            if (en.getOwner() == caster) {
-                current++;
-                list.add(en);
+            if (en.getOwner() != caster) {
+                continue;
             }
+
+            var data = Load.Unit(en).summonedPetData;
+            if (!data.counts_towards_max_summons) {
+                continue;
+            }
+
+            list.add(new SummonToRemove(en, data));
         }
 
-        list.sort(Comparator.comparingInt(x -> -x.tickCount)); // todo this needs to be from highest to lowest age
+        list.sort(Comparator.comparingInt(x -> -x.summon.tickCount)); // todo this needs to be from highest to lowest age
 
-        int excess = current - max;
+        int excess = list.size() - max;
 
-        SummonEntity summon;
+        SummonToRemove summonToRemove;
         if (excess > 0) {
             for (int i = 0; i < excess; i++) {
-                summon = list.get(i);
-                Load.Unit(summon).summonedPetData.discard(summon);
+                summonToRemove = list.get(i);
+                summonToRemove.data.discard(summonToRemove.summon);
             }
         }
     }
@@ -124,5 +124,15 @@ public class SummonPetAction extends SpellAction {
     @Override
     public String GUID() {
         return "summon_pet";
+    }
+
+    private static class SummonToRemove {
+        public SummonEntity summon;
+        public SummonedPetData data;
+
+        public SummonToRemove(SummonEntity summon, SummonedPetData data) {
+            this.summon = summon;
+            this.data = data;
+        }
     }
 }

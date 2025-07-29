@@ -1,12 +1,13 @@
 package com.robertx22.mine_and_slash.vanilla_mc.packets;
 
-import com.robertx22.mine_and_slash.database.data.spells.summons.entity.SummonEntity;
-import com.robertx22.mine_and_slash.mmorpg.SlashRef;
-import com.robertx22.mine_and_slash.uncommon.utilityclasses.AllyOrEnemy;
-import com.robertx22.mine_and_slash.uncommon.utilityclasses.EntityFinder;
 import com.robertx22.library_of_exile.main.MyPacket;
 import com.robertx22.library_of_exile.packets.ExilePacketContext;
 import com.robertx22.library_of_exile.utils.SoundUtils;
+import com.robertx22.mine_and_slash.database.data.spells.summons.entity.SummonEntity;
+import com.robertx22.mine_and_slash.mmorpg.SlashRef;
+import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
+import com.robertx22.mine_and_slash.uncommon.utilityclasses.AllyOrEnemy;
+import com.robertx22.mine_and_slash.uncommon.utilityclasses.EntityFinder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -43,7 +44,7 @@ public class UnsummonPacket extends MyPacket<UnsummonPacket> {
 
         for (LivingEntity en : finder.build()) {
             if (en instanceof SummonEntity) {
-                en.discard();
+                Load.Unit(en).summonedPetData.discard(en);
             }
         }
     }

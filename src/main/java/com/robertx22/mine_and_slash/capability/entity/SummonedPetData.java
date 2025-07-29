@@ -13,11 +13,13 @@ public class SummonedPetData {
     public String spell = "";
     public int ticks = 0;
     public int aggro_radius = 10;
+    public boolean counts_towards_max_summons;
 
-    public void setup(Spell spell, int ticks, int aggro_radius) {
+    public void setup(Spell spell, int ticks, int aggro_radius, boolean counts_towards_max_summons) {
         this.spell = spell.GUID();
         this.ticks = ticks;
         this.aggro_radius = aggro_radius;
+        this.counts_towards_max_summons = counts_towards_max_summons;
     }
 
     public boolean isEmpty() {
