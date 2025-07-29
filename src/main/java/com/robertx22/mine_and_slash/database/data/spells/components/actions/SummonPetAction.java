@@ -53,7 +53,7 @@ public class SummonPetAction extends SpellAction {
             int duration = data.get(MapField.LIFESPAN_TICKS).intValue();
             duration *= ctx.calculatedSpellData.data.getNumber(EventData.DURATION_MULTI, 1).number;
 
-            int aggroRadius = data.get(MapField.LIFESPAN_TICKS).intValue();
+            int aggroRadius = 15; // data.get(MapField.RADIUS).intValue();
             aggroRadius *= ctx.calculatedSpellData.data.getNumber(EventData.AGGRO_RADIUS, 1).number;
 
 
