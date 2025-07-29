@@ -1,8 +1,10 @@
 package com.robertx22.mine_and_slash.capability.entity;
 
-import com.robertx22.mine_and_slash.database.data.spells.components.Spell;
-import com.robertx22.mine_and_slash.database.registry.ExileDB;
 import com.robertx22.library_of_exile.utils.SoundUtils;
+import com.robertx22.mine_and_slash.database.data.spells.components.Spell;
+import com.robertx22.mine_and_slash.database.data.spells.summons.entity.SummonEntity;
+import com.robertx22.mine_and_slash.database.registry.ExileDB;
+import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -31,9 +33,26 @@ public class SummonedPetData {
         if (!en.level().isClientSide) {
             if (ticks-- < 1) {
                 SoundUtils.playSound(en, SoundEvents.GENERIC_DEATH);
-                en.discard();
+                discard(en);
             }
         }
     }
 
+    public void discard(LivingEntity en) {
+        en.discard();
+
+        if (!(en instanceof SummonEntity summonEntity)) {
+            return;
+        }
+
+        onDeath(summonEntity);
+    }
+
+    public void onDeath(SummonEntity summonEntity) {
+        if (summonEntity.getOwner() == null) {
+            return;
+        }
+
+        Load.Unit(summonEntity.getOwner()).addSummonedType(spell, -1);
+    }
 }

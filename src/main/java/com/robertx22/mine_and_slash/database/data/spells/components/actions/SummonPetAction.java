@@ -77,6 +77,8 @@ public class SummonPetAction extends SpellAction {
                 int maxTotal = (int) ctx.calculatedSpellData.data.getNumber(EventData.BONUS_TOTAL_SUMMONS, 0).number;
                 despawnIfExceededMaximumSummons(ctx.caster, maxTotal);
             }
+
+            Load.Unit(ctx.caster).addSummonedType(ctx.calculatedSpellData.spell_id, 1);
         }
     }
 
@@ -98,9 +100,11 @@ public class SummonPetAction extends SpellAction {
 
         int excess = current - max;
 
+        SummonEntity summon;
         if (excess > 0) {
             for (int i = 0; i < excess; i++) {
-                list.get(i).discard();
+                summon = list.get(i);
+                Load.Unit(summon).summonedPetData.discard(summon);
             }
         }
     }

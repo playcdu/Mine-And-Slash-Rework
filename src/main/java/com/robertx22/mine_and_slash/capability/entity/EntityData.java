@@ -137,6 +137,7 @@ public class EntityData implements ICap, INeededForClient {
     private static final String LEECH = "leech";
     private static final String MAP_ID = "mapid";
     private static final String MAP_MOB = "map_mob";
+    private static final String SUMMONED = "summoned";
 
     private transient int dontSyncTicks = 0;
 
@@ -193,6 +194,7 @@ public class EntityData implements ICap, INeededForClient {
     CooldownsData cooldowns = new CooldownsData();
     ThreatData threat = new ThreatData();
     public EntityLeechData leech = new EntityLeechData();
+    SummonedData summonedData = new SummonedData();
 
     public boolean didStatCalcThisTickForPlayer = false;
 
@@ -284,6 +286,7 @@ public class EntityData implements ICap, INeededForClient {
             LoadSave.Save(summonedPetData, nbt, PET);
             LoadSave.Save(leech, nbt, LEECH);
             LoadSave.Save(customExactStats, nbt, CUSTOM_STATS);
+            LoadSave.Save(summonedData, nbt, SUMMONED);
 
 
             if (customExactStats != null) {
@@ -349,6 +352,7 @@ public class EntityData implements ICap, INeededForClient {
             this.resources = loadOrBlank(ResourcesData.class, new ResourcesData(), nbt, RESOURCES_LOC, new ResourcesData());
             this.cooldowns = loadOrBlank(CooldownsData.class, new CooldownsData(), nbt, COOLDOWNS, new CooldownsData());
             this.leech = loadOrBlank(EntityLeechData.class, new EntityLeechData(), nbt, LEECH, new EntityLeechData());
+            this.summonedData = loadOrBlank(SummonedData.class, new SummonedData(), nbt, SUMMONED, new SummonedData());
 
 
         } catch (Exception e) {
@@ -437,6 +441,9 @@ public class EntityData implements ICap, INeededForClient {
         return threat;
     }
 
+    public SummonedData getSummonedData() {
+        return summonedData;
+    }
 
     public Unit getUnit() {
         return unit;
@@ -979,4 +986,8 @@ public class EntityData implements ICap, INeededForClient {
         return "entity_data";
     }
 
+    public void addSummonedType(String spellId, int amount) {
+        this.summonedData.addSummonedType(spellId, amount);
+        this.sync.setDirty();
+    }
 }
