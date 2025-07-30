@@ -110,7 +110,7 @@ public class SpellOnHotbarRender {
 
                 SummonedData summonedData = Load.player(mc.player).getSummonedData();
                 if (summonedData.getSummonedAmount(spell.GUID()) > 0) {
-                    drawSummoned(xs + 15, ys + 3, summonedData.getSummonedAmount(spell.GUID()));
+                    drawSummoned(xs + 3, ys + 3, summonedData.getSummonedAmount(spell.GUID()));
                 }
 
 
