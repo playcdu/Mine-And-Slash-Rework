@@ -40,15 +40,11 @@ public class OpenJewelsPacket extends MyPacket<OpenJewelsPacket> {
 
     @Override
     public void onReceived(ExilePacketContext ctx) {
-
         JewelInvHelper jewels = Load.player(ctx.getPlayer()).getJewels();
-        var inv = jewels.inv;
-
         Player p = ctx.getPlayer();
         int maxJewels = jewels.getJewelSocketsMaxStat(p);
-
         p.openMenu(new SimpleMenuProvider((i, playerInventory, playerEntity) -> {
-            return oneRow(i, playerInventory, inv, maxJewels); // todo why doesnt vanilla have this
+            return oneRow(i, playerInventory, jewels.inv, maxJewels); // todo why doesnt vanilla have this
         }, Component.literal("")));
 
     }

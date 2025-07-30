@@ -35,16 +35,16 @@ public class JewelsMenu extends ChestMenu {
         }
     }
 
+    private boolean isJewelSlot(int pIndex) {
+        return pIndex >= maxJewels && pIndex < firstPlayerInventoryIndex;
+    }
+
     @Override
     public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
         if (isJewelSlot(pIndex)) {
             return ItemStack.EMPTY;
         }
         return super.quickMoveStack(pPlayer, pIndex);
-    }
-
-    private boolean isJewelSlot(int pIndex) {
-        return pIndex >= maxJewels && pIndex < firstPlayerInventoryIndex;
     }
 
     @Override
