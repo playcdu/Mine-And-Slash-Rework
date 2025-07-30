@@ -7,6 +7,7 @@ import com.robertx22.mine_and_slash.database.registry.ExileDB;
 import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 public class SummonedPetData {
 
@@ -51,10 +52,10 @@ public class SummonedPetData {
     }
 
     public void onDeath(SummonEntity summonEntity) {
-        if (summonEntity.getOwner() == null) {
+        if (summonEntity.getOwner() == null || !(summonEntity.getOwner() instanceof Player player)) {
             return;
         }
 
-        Load.Unit(summonEntity.getOwner()).addSummonedType(spell, -1);
+        Load.player(player).addSummonedType(spell, -1);
     }
 }

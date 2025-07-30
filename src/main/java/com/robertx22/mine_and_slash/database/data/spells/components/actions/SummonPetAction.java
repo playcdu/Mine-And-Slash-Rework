@@ -76,8 +76,15 @@ public class SummonPetAction extends SpellAction {
                 despawnIfExceededMaximumSummons(ctx.caster, maxTotal);
             }
 
-            Load.Unit(ctx.caster).addSummonedType(ctx.calculatedSpellData.spell_id, 1);
+            increaseSummonedAmount(ctx);
         }
+    }
+
+    private static void increaseSummonedAmount(SpellCtx ctx) {
+        if (!(ctx.caster instanceof Player player)) {
+            return;
+        }
+        Load.player(player).addSummonedType(ctx.calculatedSpellData.spell_id, 1);
     }
 
     public static void despawnIfExceededMaximumSummons(LivingEntity caster, int max) {
