@@ -70,25 +70,15 @@ public class SummonPetAction extends SpellAction {
 
 
             ctx.world.addFreshEntity(en);
-
-            if (counts) {
-                int maxTotal = (int) ctx.calculatedSpellData.data.getNumber(EventData.BONUS_TOTAL_SUMMONS, 0).number;
-                despawnIfExceededMaximumSummons(ctx.caster, maxTotal);
-            }
-
-            increaseSummonedAmount(ctx);
         }
+
+        int totalSummons = (int) ctx.calculatedSpellData.data.getNumber(EventData.BONUS_TOTAL_SUMMONS, 0).number;
+        updatePlayerSummons(ctx.caster, totalSummons, ctx.calculatedSpellData.spell_id);
     }
 
-    private static void increaseSummonedAmount(SpellCtx ctx) {
-        if (!(ctx.caster instanceof Player player)) {
-            return;
-        }
-        Load.player(player).addSummonedType(ctx.calculatedSpellData.spell_id, 1);
-    }
-
-    public static void despawnIfExceededMaximumSummons(LivingEntity caster, int max) {
+    public static void updatePlayerSummons(LivingEntity caster, int totalSummons, String currentSummonSpell) {
         List<SummonToRemove> list = new ArrayList<>();
+        Map<String, Integer> summonedTypes = new HashMap<>();
 
         for (SummonEntity en : EntityFinder.start(caster, SummonEntity.class, caster.blockPosition()).searchFor(AllyOrEnemy.all).radius(100).build()) {
             if (en.getOwner() != caster) {
@@ -96,6 +86,8 @@ public class SummonPetAction extends SpellAction {
             }
 
             var data = Load.Unit(en).summonedPetData;
+            summonedTypes.put(data.spell, summonedTypes.getOrDefault(data.spell, 0) + 1);
+
             if (!data.counts_towards_max_summons) {
                 continue;
             }
@@ -104,16 +96,23 @@ public class SummonPetAction extends SpellAction {
         }
 
         list.sort(Comparator.comparingInt(x -> -x.summon.tickCount)); // todo this needs to be from highest to lowest age
+        int excess = list.size() - totalSummons;
 
-        int excess = list.size() - max;
-
-        SummonToRemove summonToRemove;
         if (excess > 0) {
             for (int i = 0; i < excess; i++) {
-                summonToRemove = list.get(i);
+                SummonToRemove summonToRemove = list.get(i);
                 summonToRemove.data.discard(summonToRemove.summon);
+
+                String spell = summonToRemove.data.spell;
+                summonedTypes.put(spell, summonedTypes.get(spell) - 1);
             }
         }
+
+        if (!(caster instanceof Player player)) {
+            return;
+        }
+
+        Load.player(player).setSummonedData(summonedTypes);
     }
 
     public MapHolder create(EntityType type, int lifespan, int amount, SummonType st, boolean counts) {

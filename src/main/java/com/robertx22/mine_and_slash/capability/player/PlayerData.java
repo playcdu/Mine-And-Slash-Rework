@@ -42,6 +42,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class PlayerData implements ICap {
@@ -289,6 +290,11 @@ public class PlayerData implements ICap {
 
     public void addSummonedType(String spellId, int amount) {
         this.summonedData.addSummonedType(spellId, amount);
+        this.playerDataSync.setDirty();
+    }
+
+    public void setSummonedData(Map<String, Integer> summonedTypes) {
+        summonedData.setSummonedType(summonedTypes);
         this.playerDataSync.setDirty();
     }
 
