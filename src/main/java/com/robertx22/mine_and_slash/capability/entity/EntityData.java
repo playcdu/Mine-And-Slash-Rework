@@ -437,6 +437,7 @@ public class EntityData implements ICap, INeededForClient {
         return threat;
     }
 
+
     public Unit getUnit() {
         return unit;
     }
@@ -977,4 +978,5 @@ public class EntityData implements ICap, INeededForClient {
     public String getCapIdForSyncing() {
         return "entity_data";
     }
+
 }
