@@ -7,6 +7,7 @@ import com.robertx22.library_of_exile.utils.LoadSave;
 import com.robertx22.mine_and_slash.a_libraries.curios.MyCurioUtils;
 import com.robertx22.mine_and_slash.a_libraries.curios.RefCurio;
 import com.robertx22.mine_and_slash.capability.DirtySync;
+import com.robertx22.mine_and_slash.capability.entity.SummonedData;
 import com.robertx22.mine_and_slash.capability.player.data.*;
 import com.robertx22.mine_and_slash.capability.player.helper.GemInventoryHelper;
 import com.robertx22.mine_and_slash.capability.player.helper.JewelInvHelper;
@@ -41,6 +42,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class PlayerData implements ICap {
@@ -95,6 +97,7 @@ public class PlayerData implements ICap {
     private static final String POINTS = "points";
     private static final String MISC_INFO = "minfo";
     private static final String OMENS_FILLED = "ofi";
+    private static final String SUMMONED = "summoned";
 
     public DirtySync playerDataSync = new DirtySync("playerdata_sync", x -> syncData());
 
@@ -127,6 +130,7 @@ public class PlayerData implements ICap {
     public CharStorageData characters = new CharStorageData();
 
     public List<String> aurasOn = new ArrayList<>();
+    SummonedData summonedData = new SummonedData();
 
 
     public int bonusTalents = 0;
@@ -165,6 +169,7 @@ public class PlayerData implements ICap {
         LoadSave.Save(characters, nbt, CHARACTERS);
         LoadSave.Save(points, nbt, POINTS);
         LoadSave.Save(miscInfo, nbt, MISC_INFO);
+        LoadSave.Save(summonedData, nbt, SUMMONED);
         // LoadSave.Save(ctxStats, nbt, "ctx");
 
         nbt.put(GEMS, skillGemInv.createTag());
@@ -194,6 +199,7 @@ public class PlayerData implements ICap {
         this.points = loadOrBlank(PlayerPointsData.class, new PlayerPointsData(), nbt, POINTS, new PlayerPointsData());
         this.characters = loadOrBlank(CharStorageData.class, new CharStorageData(), nbt, CHARACTERS, new CharStorageData());
         this.miscInfo = loadOrBlank(MiscSyncData.class, new MiscSyncData(), nbt, MISC_INFO, new MiscSyncData());
+        this.summonedData = loadOrBlank(SummonedData.class, new SummonedData(), nbt, SUMMONED, new SummonedData());
         // this.ctxStats = loadOrBlank(SavedStatCtxList.class, new SavedStatCtxList(), nbt, "ctx", new SavedStatCtxList());
 
         skillGemInv.fromTag(nbt.getList(GEMS, 10)); // todo
@@ -276,6 +282,20 @@ public class PlayerData implements ICap {
 
     public GemInventoryHelper getSkillGemInventory() {
         return new GemInventoryHelper(player, skillGemInv, auraInv);
+    }
+
+    public SummonedData getSummonedData() {
+        return summonedData;
+    }
+
+    public void addSummonedType(String spellId, int amount) {
+        this.summonedData.addSummonedType(spellId, amount);
+        this.playerDataSync.setDirty();
+    }
+
+    public void setSummonedData(Map<String, Integer> summonedTypes) {
+        summonedData.setSummonedType(summonedTypes);
+        this.playerDataSync.setDirty();
     }
 
     public static <OBJ> OBJ loadOrBlank(Class theclass, OBJ newobj, CompoundTag nbt, String loc, OBJ blank) {

@@ -3,6 +3,7 @@ package com.robertx22.mine_and_slash.mmorpg.event_registers;
 import com.robertx22.library_of_exile.events.base.EventConsumer;
 import com.robertx22.library_of_exile.events.base.ExileEvents;
 import com.robertx22.mine_and_slash.database.DatabaseCaches;
+import com.robertx22.mine_and_slash.database.data.spells.summons.entity.SummonEntity;
 import com.robertx22.mine_and_slash.event_hooks.damage_hooks.LivingHurtUtils;
 import com.robertx22.mine_and_slash.event_hooks.damage_hooks.reworked.NewDamageMain;
 import com.robertx22.mine_and_slash.event_hooks.entity.OnMobSpawn;
@@ -126,6 +127,10 @@ public class CommonEvents {
                     Load.Unit(deadMob).getCooldowns().setOnCooldown(OnDeathEvent.ID, Integer.MAX_VALUE);
                     OnDeathEvent e = new OnDeathEvent(deadMob, deadMob, event.getSource());
                     e.Activate();
+
+                    if (deadMob instanceof SummonEntity summonEntity) {
+                        Load.Unit(summonEntity).summonedPetData.onDeath(summonEntity);
+                    }
                 }
             }
         });
