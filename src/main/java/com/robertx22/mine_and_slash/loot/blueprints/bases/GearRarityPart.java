@@ -13,6 +13,7 @@ import com.robertx22.mine_and_slash.loot.blueprints.SkillGemBlueprint;
 import com.robertx22.mine_and_slash.uncommon.MathHelper;
 import com.robertx22.mine_and_slash.uncommon.interfaces.data_items.IRarity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class GearRarityPart extends BlueprintPart<GearRarity, ItemBlueprint> {
@@ -68,6 +69,60 @@ public class GearRarityPart extends BlueprintPart<GearRarity, ItemBlueprint> {
 
     }
 
+    /**
+     * Returns a list of WeightedRarity, where unique rarities have their weight increased by magic find.
+     */
+    private List<WeightedRarity> getWeightedRarities(List<GearRarity> possible) {
+        List<WeightedRarity> weighted = new ArrayList<>();
+        for (GearRarity rar : possible) {
+            int weight = rar.Weight();
+            if (rar.guid.equals(IRarity.UNIQUE_ID) && canRollUnique) {
+                // Increase unique weight, tweak as needed
+                float multiplier = 1.0f + (chanceForHigherRarity / 200f);
+                // Clamp multiplier to avoid excessive values
+                multiplier = MathHelper.clamp(multiplier, 1.0f, 10.0f);
+                weight = Math.round(weight * multiplier);
+            }
+            if (rar.guid.equals(IRarity.RUNEWORD_ID) && canRollRuned) {
+                // Increase runed weight, tweak as needed
+                float multiplier = 1.0f + (chanceForHigherRarity / 200f);
+                // Clamp multiplier to avoid excessive values
+                multiplier = MathHelper.clamp(multiplier, 1.0f, 10.0f);
+                weight = Math.round(weight * multiplier);
+            }
+            weighted.add(new WeightedRarity(rar, weight));
+        }
+        return weighted;
+    }
+
+    private static class WeightedRarity {
+        public final GearRarity rarity;
+        public final int weight;
+
+        public WeightedRarity(GearRarity rarity, int weight) {
+            this.rarity = rarity;
+            this.weight = weight;
+        }
+    }
+
+    private GearRarity weightedRandomRarity(List<WeightedRarity> weighted) {
+        int totalWeight = weighted.stream().mapToInt(w -> w.weight).sum();
+        if (totalWeight <= 0) {
+            // fallback: pick any
+            return weighted.get(0).rarity;
+        }
+        int roll = RandomUtils.RandomRange(1, totalWeight);
+        int cumulative = 0;
+        for (WeightedRarity wr : weighted) {
+            cumulative += wr.weight;
+            if (roll <= cumulative) {
+                return wr.rarity;
+            }
+        }
+        // fallback
+        return weighted.get(0).rarity;
+    }
+
     @Override
     protected GearRarity generateIfNull() {
 
@@ -75,7 +130,11 @@ public class GearRarityPart extends BlueprintPart<GearRarity, ItemBlueprint> {
             return specialRar;
         }
         var possible = getPossibleRarities();
-        GearRarity rar = RandomUtils.weightedRandom(possible);
+
+        // Adjust weights for unique rarities based on magic find
+        var weighted = getWeightedRarities(possible);
+
+        GearRarity rar = weightedRandomRarity(weighted);
 
         if (rar.hasHigherRarity()) {
             var higher = rar.getHigherRarity();
@@ -96,7 +155,6 @@ public class GearRarityPart extends BlueprintPart<GearRarity, ItemBlueprint> {
 
         return rar;
     }
-
 }
 
 

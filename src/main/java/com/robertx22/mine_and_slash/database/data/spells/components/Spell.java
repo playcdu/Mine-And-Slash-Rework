@@ -58,7 +58,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.text.DecimalFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExileRegistry<Spell>, IAutoLocName, IAutoLocDesc, MaxLevelProvider {
@@ -75,7 +74,6 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
     public SpellAnimationData cast_animation = new SpellAnimationData(SpellAnimations.STEADY_CAST);
     public SpellAnimationData cast_finish_animation = new SpellAnimationData(SpellAnimations.CAST_FINISH);
 
-
     public Boolean hasCost(ResourceType type) {
         if (type == ResourceType.energy) {
             return config.ene_cost.min > 0;
@@ -87,13 +85,9 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
     }
 
     public int min_lvl = 1;
-
-
     public int default_lvl = 0;
-
     public String lvl_based_on_spell = "";
     public String show_other_spell_tooltip = "";
-
     public boolean manual_tip = false;
     public List<String> disabled_dims = new ArrayList<>();
     public String effect_tip = "";
@@ -104,20 +98,16 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
     }
 
     public int max_lvl = 16; // first lvl unlocks spell, then every 3 lvls unlocks a supp gem slot?
-
     public List<StatMod> statsForSkillGem = new ArrayList<>();
-
     public transient String locDesc = "";
 
     public boolean isAllowedInDimension(Level world) {
-
         if (disabled_dims.isEmpty()) {
             return true;
         }
         return disabled_dims.stream()
                 .map(x -> new ResourceLocation(x))
                 .noneMatch(x -> x.equals(MapManager.getResourceLocation(world)));
-
     }
 
     public AttachedSpell getAttached() {
@@ -163,54 +153,38 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return WeaponTypes.none;
     }
 
     public final void onCastingTick(SpellCastContext ctx) {
-
         int timesToCast = (int) ctx.spell.getConfig().times_to_cast;
-
         if (timesToCast > 1) {
-
             int castTimeTicks = (int) getCastTimeTicks(ctx);
-
             // if i didnt do this then cast time reduction would reduce amount of spell hits.
             int castEveryXTicks = castTimeTicks / timesToCast;
-
             if (timesToCast > 1) {
                 if (castEveryXTicks < 1) {
                     castEveryXTicks = 1;
                 }
             }
-
             if (ctx.ticksInUse > 0 && ctx.ticksInUse % castEveryXTicks == 0) {
                 this.cast(ctx);
             }
-
         } else if (timesToCast < 1) {
             ExileLog.get().warn("Times to cast spell is: " + timesToCast + " . this seems like a bug.");
         }
-
     }
 
-
     public void cast(SpellCastContext ctx) {
-
         LivingEntity caster = ctx.caster;
-
         ctx.castedThisTick = true;
-
-     /*
+        /*
         if (MMORPG.RUN_DEV_TOOLS_REMOVE_WHEN_DONE && this.config.swing_arm) {
             //    caster.swingTime = -1; // this makes sure hand swings
             //   caster.swing(InteractionHand.MAIN_HAND);
         }
-
-      */
+        */
         attached.onCast(SpellCtx.onCast(caster, ctx.calcData));
-
-
     }
 
     public final int getCooldownTicks(SpellCastContext ctx) {
@@ -258,14 +232,21 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
         return (int) ctx.event.data.getNumber(EventData.ENERGY_COST).number;
     }
 
+    // Helper record to pair effects and durations
+    private static class EffectWithDuration {
+        public final ExileEffect effect;
+        public final String duration;
+
+        public EffectWithDuration(ExileEffect effect, String duration) {
+            this.effect = effect;
+            this.duration = duration;
+        }
+    }
+
     public final List<Component> GetTooltipString(StatRangeInfo info) {
-
         SpellCastContext ctx = new SpellCastContext(info.player, 0, this);
-
         List<Component> list = new ArrayList<>();
-
         list.add(locName().withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
-
         list.add(ExileText.emptyLine().get());
 
         if (true || Screen.hasShiftDown()) {
@@ -273,9 +254,7 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
                     .forEach(x -> list.add(Component.literal(x)));
         }
 
-
         list.add(ExileText.emptyLine().get());
-
 
         int mana = getCalculatedManaCost(ctx);
         int ene = getCalculatedEnergyCost(ctx);
@@ -285,20 +264,15 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
         }
         if (ene > 0) {
             list.add(Words.ENE_COST.locName(ene).withStyle(ChatFormatting.GREEN));
-
         }
         if (config.usesCharges()) {
-
             list.add(Words.MAX_CHARGES.locName(config.charges).withStyle(ChatFormatting.YELLOW));
             list.add(Words.CHARGE_REGEN.locName(config.charge_regen / 20).withStyle(ChatFormatting.YELLOW));
-
         } else {
             list.add(Words.COOLDOWN.locName(getCooldownTicks(ctx) / 20).withStyle(ChatFormatting.YELLOW));
         }
 
-
         int casttime = getCastTimeTicks(ctx);
-
 
         if (casttime == 0) {
             list.add(Words.INSTANT_CAST.locName().withStyle(ChatFormatting.GREEN));
@@ -307,7 +281,6 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
         }
 
         Set<String> radiuses = new LinkedHashSet<>();
-
         this.getAttached()
                 .getAllComponents()
                 .forEach(x -> {
@@ -320,10 +293,8 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
                     });
                 });
 
-
         for (String radius : radiuses) {
             list.add(Words.Radius.locName(radius).withStyle(ChatFormatting.GOLD));
-
         }
 
         list.add(ExileText.emptyLine().get());
@@ -336,20 +307,20 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
 
         if (this.config.times_to_cast > 1) {
             list.add(ExileText.emptyLine().get());
-
             list.add(Words.CASTED_TIMES_CHANNEL.locName(config.times_to_cast).withStyle(ChatFormatting.RED));
         }
 
         boolean showeffect = Screen.hasShiftDown();
 
-
-        Set<ExileEffect> effect = new LinkedHashSet<>();
-        List<String> ticks = new ArrayList<>();
-        //In CTE2 the duration of some effects is not an integer.
+        // --- FIX: Use a map to keep only the effect with the greatest duration ---
+        LinkedHashMap<ExileEffect, String> effectsWithDurations = new LinkedHashMap<>();
         DecimalFormat decimalFormat = new DecimalFormat("0.0");
 
         if (ExileDB.ExileEffects().isRegistered(effect_tip)) {
-            effect.add(ExileDB.ExileEffects().get(effect_tip));
+            effectsWithDurations.put(
+                    ExileDB.ExileEffects().get(effect_tip),
+                    "" // No duration for this one, but could be handled if needed
+            );
         }
 
         try {
@@ -358,42 +329,51 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
                     .forEach(x -> {
                         x.acts.forEach(a -> {
                             if (a.has(MapField.EXILE_POTION_ID)) {
-                                effect.add(a.getExileEffect());
-                                //first format the double, then if the number have ".0", simply remove it
-                                ticks.add(StringUtils.remove(decimalFormat.format(a.getOrDefault(MapField.POTION_DURATION, 0D) / 20), ".0"));
+                                ExileEffect eff = a.getExileEffect();
+                                String dur = StringUtils.remove(decimalFormat.format(a.getOrDefault(MapField.POTION_DURATION, 0D) / 20), ".0");
+                                // If already present, keep the greater duration
+                                if (effectsWithDurations.containsKey(eff)) {
+                                    String existingDur = effectsWithDurations.get(eff);
+                                    float newDur = parseDuration(dur);
+                                    float oldDur = parseDuration(existingDur);
+                                    if (newDur > oldDur) {
+                                        effectsWithDurations.put(eff, dur);
+                                    }
+                                } else {
+                                    effectsWithDurations.put(eff, dur);
+                                }
                             }
                         });
                     });
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         MutableComponent showEffectTip = null;
         try {
             if (showeffect) {
-                //int lvl = this.getLevelOf(ctx.caster);
-                //int perc = (int) (((float) lvl / (float) getMaxLevel()) * 100f);
-                AtomicInteger i = new AtomicInteger();
-                effect.forEach(x -> {
-                    list.add(x.locName().withStyle(ChatFormatting.BLUE));
-                    list.add(x.max_stacks > 1 ? Words.Stats.locName().append(Words.PER_STACK.locName()).withStyle(ChatFormatting.GREEN) : Words.Stats.locName().withStyle(ChatFormatting.GREEN));
-                    List<ExactStatData> stats = x.getExactStats(ctx.caster, this, 1, 1);
+                for (Map.Entry<ExileEffect, String> entry : effectsWithDurations.entrySet()) {
+                    ExileEffect effect = entry.getKey();
+                    String duration = entry.getValue();
+                    list.add(effect.locName().withStyle(ChatFormatting.BLUE));
+                    list.add(effect.max_stacks > 1 ? Words.Stats.locName().append(Words.PER_STACK.locName()).withStyle(ChatFormatting.GREEN) : Words.Stats.locName().withStyle(ChatFormatting.GREEN));
+                    List<ExactStatData> stats = effect.getExactStats(ctx.caster, this, 1, 1);
                     for (ExactStatData stat : stats) {
                         list.addAll(stat.GetTooltipString());
                     }
-                    list.add(Words.LASTS_SEC.locName(ticks.get(i.get())));
-                    i.getAndIncrement();
+                    if (duration != null && !duration.isEmpty()) {
+                        list.add(Words.LASTS_SEC.locName(duration));
+                    }
                     list.add(ExileText.emptyLine().get());
-                });
-
+                }
             } else {
-                if (!effect.isEmpty()) {
+                if (!effectsWithDurations.isEmpty()) {
                     showEffectTip = Words.SHIFT_TO_SHOW_EFFECT.locName().withStyle(ChatFormatting.BLUE);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
 
         if (!this.statsForSkillGem.isEmpty()) {
             list.add(Words.SPELL_STATS.locName());
@@ -412,15 +392,10 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
         }
 
         if (info.hasShiftDown && this.config.tags.contains(SpellTags.has_pet_ability)) {
-
             list.clear(); // tooltip too long otherwise
-
             list.add(Words.PET_BASIC.locName());
-
             Spell spell = config.getSummonBasicSpell();
-
             list.addAll(spell.GetTooltipString(info));
-
         }
         if (!this.show_other_spell_tooltip.isEmpty()) {
             if (info.hasAltDown) {
@@ -445,7 +420,16 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
         TooltipUtils.removeDoubleBlankLines(list);
 
         return list;
+    }
 
+    // Helper to parse duration string to float, treating empty as 0
+    private static float parseDuration(String dur) {
+        if (dur == null || dur.isEmpty()) return 0f;
+        try {
+            return Float.parseFloat(dur);
+        } catch (Exception e) {
+            return 0f;
+        }
     }
 
     public int getLevelOf(LivingEntity en) {
@@ -467,7 +451,6 @@ public final class Spell implements ISkillGem, IGUID, IAutoGson<Spell>, JsonExil
         if (lvl < default_lvl) {
             lvl = default_lvl;
         }
-
 
         return lvl;
     }
