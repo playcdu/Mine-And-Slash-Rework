@@ -57,13 +57,15 @@ public class OnKeyPress {
         }
     }
 
-    private static void checkToAddSpellKeyPress(SpellKeybind key) {
+    private static boolean checkToAddSpellKeyPress(SpellKeybind key) {
         if (key.key.consumeClick()) {
             spellKeysPressed.add(key);
             // Consume any remaining clicks
             while (key.key.consumeClick()) {
             }
+            return true;
         }
+        return false;
     }
 
     private static void updateSpellInputs() {
@@ -78,13 +80,17 @@ public class OnKeyPress {
         // Prioritize binds with modifiers in case the same key is reused but with a modifier
         for (SpellKeybind key : keys) {
             if (key.key.getKeyModifier() == KeyModifier.NONE) {
-                checkToAddSpellKeyPress(key);
+                if (checkToAddSpellKeyPress(key)) {
+                    break;
+                }
             }
         }
 
         for (SpellKeybind key : keys) {
             if (key.key.getKeyModifier() != KeyModifier.NONE) {
-                checkToAddSpellKeyPress(key);
+                if (checkToAddSpellKeyPress(key)) {
+                    break;
+                }
             }
         }
 
