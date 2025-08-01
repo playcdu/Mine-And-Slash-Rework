@@ -364,7 +364,8 @@ public enum Words implements IAutoLocName {
     INCREASE_PERCENT_STAT("Extra ", "use for stat like \"(Extra) (attack speed)\", this is different with multiply stat prefix."),
     REDUCE_PERCENT_STAT("Lower "),
     EMPTY_BOX("Box"),
-    LEVEL_UP_TYPE_PLAYER("Player");
+    LEVEL_UP_TYPE_PLAYER("Player"),
+    JEWEL_SOCKET_NOT_AVAILABLE("Unlock on talent tree");
 
 
     private String localization = "";

@@ -1,6 +1,7 @@
 package com.robertx22.mine_and_slash.database.data.spells.components.actions;
 
 import com.robertx22.mine_and_slash.aoe_data.database.spells.SummonType;
+import com.robertx22.mine_and_slash.capability.entity.SummonedPetData;
 import com.robertx22.mine_and_slash.database.data.spells.components.MapHolder;
 import com.robertx22.mine_and_slash.database.data.spells.components.Spell;
 import com.robertx22.mine_and_slash.database.data.spells.map_fields.MapField;
@@ -57,7 +58,8 @@ public class SummonPetAction extends SpellAction {
             aggroRadius *= ctx.calculatedSpellData.data.getNumber(EventData.AGGRO_RADIUS_MULTI, 1).number;
 
 
-            Load.Unit(en).summonedPetData.setup(ctx.calculatedSpellData.getSpell(), duration, (int) aggroRadius);
+            boolean counts = data.getOrDefault(MapField.COUNTS_TOWARDS_MAX_SUMMONS, true);
+            Load.Unit(en).summonedPetData.setup(ctx.calculatedSpellData.getSpell(), duration, (int) aggroRadius, counts);
 
 
             Load.Unit(en).SetMobLevelAtSpawn((Player) ctx.caster);
@@ -68,41 +70,49 @@ public class SummonPetAction extends SpellAction {
 
 
             ctx.world.addFreshEntity(en);
-
-
-            boolean counts = data.getOrDefault(MapField.COUNTS_TOWARDS_MAX_SUMMONS, true);
-            SummonType summonType = data.getSummonType();
-
-            if (counts) {
-                int maxTotal = (int) ctx.calculatedSpellData.data.getNumber(EventData.BONUS_TOTAL_SUMMONS, 0).number;
-                despawnIfExceededMaximumSummons(ctx.caster, maxTotal);
-            }
         }
+
+        int totalSummons = (int) ctx.calculatedSpellData.data.getNumber(EventData.BONUS_TOTAL_SUMMONS, 0).number;
+        updatePlayerSummons(ctx.caster, totalSummons, ctx.calculatedSpellData.spell_id);
     }
 
-    public static void despawnIfExceededMaximumSummons(LivingEntity caster, int max) {
-
-
-        int current = 0;
-
-        List<SummonEntity> list = new ArrayList<>();
+    public static void updatePlayerSummons(LivingEntity caster, int totalSummons, String currentSummonSpell) {
+        List<SummonToRemove> list = new ArrayList<>();
+        Map<String, Integer> summonedTypes = new HashMap<>();
 
         for (SummonEntity en : EntityFinder.start(caster, SummonEntity.class, caster.blockPosition()).searchFor(AllyOrEnemy.all).radius(100).build()) {
-            if (en.getOwner() == caster) {
-                current++;
-                list.add(en);
+            if (en.getOwner() != caster) {
+                continue;
             }
+
+            var data = Load.Unit(en).summonedPetData;
+            summonedTypes.put(data.spell, summonedTypes.getOrDefault(data.spell, 0) + 1);
+
+            if (!data.counts_towards_max_summons) {
+                continue;
+            }
+
+            list.add(new SummonToRemove(en, data));
         }
 
-        list.sort(Comparator.comparingInt(x -> -x.tickCount)); // todo this needs to be from highest to lowest age
-
-        int excess = current - max;
+        list.sort(Comparator.comparingInt(x -> -x.summon.tickCount)); // todo this needs to be from highest to lowest age
+        int excess = list.size() - totalSummons;
 
         if (excess > 0) {
             for (int i = 0; i < excess; i++) {
-                list.get(i).discard();
+                SummonToRemove summonToRemove = list.get(i);
+                summonToRemove.data.discard(summonToRemove.summon);
+
+                String spell = summonToRemove.data.spell;
+                summonedTypes.put(spell, summonedTypes.get(spell) - 1);
             }
         }
+
+        if (!(caster instanceof Player player)) {
+            return;
+        }
+
+        Load.player(player).setSummonedData(summonedTypes);
     }
 
     public MapHolder create(EntityType type, int lifespan, int amount, SummonType st, boolean counts) {
@@ -120,5 +130,15 @@ public class SummonPetAction extends SpellAction {
     @Override
     public String GUID() {
         return "summon_pet";
+    }
+
+    private static class SummonToRemove {
+        public SummonEntity summon;
+        public SummonedPetData data;
+
+        public SummonToRemove(SummonEntity summon, SummonedPetData data) {
+            this.summon = summon;
+            this.data = data;
+        }
     }
 }

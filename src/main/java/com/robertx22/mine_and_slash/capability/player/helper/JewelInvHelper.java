@@ -11,7 +11,9 @@ import com.robertx22.mine_and_slash.uncommon.localization.Chats;
 import com.robertx22.mine_and_slash.uncommon.utilityclasses.PlayerUtils;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,12 +84,20 @@ public class JewelInvHelper implements IStatCtx {
                     ExplainedResultUtil.sendErrorMessage(p, Chats.EQUIP_JEWEL_ERROR, Chats.YOU_LACK_JEWEL_SLOTS);
                     unequip(p, i);
                 }
-            } else {
+            } else if (!IsPlaceholder(stack)) {
                 unequip(p, i);
             }
         }
     }
 
+
+    public static boolean IsPlaceholder(ItemStack stack) {
+        return stack.getDescriptionId().equals(GetPlaceholder().getDescriptionId());
+    }
+
+    public static Item GetPlaceholder() {
+        return Items.BARRIER;
+    }
 
     public List<JewelItemData> getAllJewels() {
         List<JewelItemData> list = new ArrayList<>();

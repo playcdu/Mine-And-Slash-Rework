@@ -2,6 +2,8 @@ package com.robertx22.mine_and_slash.vanilla_mc.packets;
 
 import com.robertx22.library_of_exile.main.MyPacket;
 import com.robertx22.library_of_exile.packets.ExilePacketContext;
+import com.robertx22.mine_and_slash.capability.player.container.JewelsMenu;
+import com.robertx22.mine_and_slash.capability.player.helper.JewelInvHelper;
 import com.robertx22.mine_and_slash.mmorpg.SlashRef;
 import com.robertx22.mine_and_slash.uncommon.datasaving.Load;
 import net.minecraft.network.FriendlyByteBuf;
@@ -11,7 +13,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
 
 public class OpenJewelsPacket extends MyPacket<OpenJewelsPacket> {
@@ -39,19 +40,17 @@ public class OpenJewelsPacket extends MyPacket<OpenJewelsPacket> {
 
     @Override
     public void onReceived(ExilePacketContext ctx) {
-
-        var inv = Load.player(ctx.getPlayer()).getJewels().inv;
-
+        JewelInvHelper jewels = Load.player(ctx.getPlayer()).getJewels();
         Player p = ctx.getPlayer();
-
+        int maxJewels = jewels.getJewelSocketsMaxStat(p);
         p.openMenu(new SimpleMenuProvider((i, playerInventory, playerEntity) -> {
-            return oneRow(i, playerInventory, inv); // todo why doesnt vanilla have this
+            return oneRow(i, playerInventory, jewels.inv, maxJewels); // todo why doesnt vanilla have this
         }, Component.literal("")));
 
     }
 
-    public static ChestMenu oneRow(int pContainerId, Inventory pPlayerInventory, Container pContainer) {
-        return new ChestMenu(MenuType.GENERIC_9x1, pContainerId, pPlayerInventory, pContainer, 1);
+    public static JewelsMenu oneRow(int pContainerId, Inventory pPlayerInventory, Container pContainer, int maxJewels) {
+        return new JewelsMenu(MenuType.GENERIC_9x1, pContainerId, pPlayerInventory, pContainer, 1, maxJewels);
     }
 
     @Override

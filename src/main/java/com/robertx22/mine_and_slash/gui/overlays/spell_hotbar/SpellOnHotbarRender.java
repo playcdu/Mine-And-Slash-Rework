@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.robertx22.library_of_exile.utils.CLOC;
 import com.robertx22.library_of_exile.utils.GuiUtils;
 import com.robertx22.mine_and_slash.capability.entity.CooldownsData;
+import com.robertx22.mine_and_slash.capability.entity.SummonedData;
 import com.robertx22.mine_and_slash.config.forge.ClientConfigs;
 import com.robertx22.mine_and_slash.database.data.spells.components.Spell;
 import com.robertx22.mine_and_slash.mmorpg.SlashRef;
@@ -105,6 +106,11 @@ public class SpellOnHotbarRender {
                     float percent = (float) cds.getCooldownTicks(spell.GUID()) / (float) cds.getNeededTicks(spell.GUID());
                     drawCooldown(gui, percent, xs, ys);
 
+                }
+
+                SummonedData summonedData = Load.player(mc.player).getSummonedData();
+                if (summonedData.getSummonedAmount(spell.GUID()) > 0) {
+                    drawSummoned(xs + 3, ys + 3, summonedData.getSummonedAmount(spell.GUID()));
                 }
 
 
@@ -212,5 +218,21 @@ public class SpellOnHotbarRender {
             String stext = cdsec + "s";
             //  GuiUtils.renderScaledText(gui, xs + 27, ys + 10, 0.75F, stext, ChatFormatting.YELLOW);
         }
+    }
+
+    private void drawSummoned(int x, int y, int summonedAmount) {
+        int bgsize = 10;
+        float alpha = 0.75f;
+        gui.setColor(alpha, alpha, alpha, alpha);
+        gui.blit(KEY_BG, x - 6, y - 6, 0, 0, bgsize, bgsize, bgsize, bgsize);
+
+        gui.setColor(1.0F, 1.0F, 1.0F, 1);
+
+
+        String txt = String.valueOf(summonedAmount);
+        // todo renderScaledText doesnt do push and pop but does antiscale.. FIX THIS
+        GuiUtils.renderScaledText(gui, x - 1, y, 1, txt, ChatFormatting.RED);
+
+        RenderSystem.disableBlend(); // enables transparency
     }
 }
