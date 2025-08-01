@@ -1,5 +1,7 @@
 package com.robertx22.mine_and_slash.event_hooks.player;
 
+import java.util.Stack;
+
 import com.robertx22.library_of_exile.main.Packets;
 import com.robertx22.mine_and_slash.config.forge.ClientConfigs;
 import com.robertx22.mine_and_slash.gui.screens.character_screen.MainHubScreen;
@@ -16,13 +18,15 @@ public class OnKeyPress {
 
     public static int cooldown = 0;
 
+    // Store what order spell keys are pressed in to prioritize most recently pressed
+    private static Stack<SpellKeybind> spellKeysPressed = new Stack<>();
+
+    // Number of last spell sent to the server
+    private static int lastSpellNumber = -1;
+    // Timer to resend packet so the server knows we want to keep casting
+    private static int spellPacketResendTimer = 0;
 
     public static void onEndTick(Minecraft mc) {
-
-        if (cooldown > 0) {
-            cooldown--;
-            return;
-        }
 
         if (mc.player == null) {
             return;
@@ -32,6 +36,12 @@ public class OnKeyPress {
             return;
         }
 
+        updateSpellInputs();
+
+        if (cooldown > 0) {
+            cooldown--;
+            return;
+        }
 
         if (KeybindsRegister.UNSUMMON.isDown()) {
             Packets.sendToServer(new UnsummonPacket());
@@ -44,46 +54,63 @@ public class OnKeyPress {
             cooldown = 5;
         } else if (KeybindsRegister.QUICK_DRINK_POTION.consumeClick()) {
             Packets.sendToServer(new QuickUsePotionPacket());
-        } else {
+        }
+    }
 
-            int number = -1;
-
-            var keys = SpellKeybind.ALL;
-
-            if (ClientConfigs.getConfig().HOTBAR_SWAPPING.get()) {
-                keys = SpellKeybind.FIRST_HOTBAR_KEYS;
-            }
-
-            for (SpellKeybind key : keys) {
-                if (key.key.isDown()) {
-                    number = key.getIndex();
-                }
-            }
-            // we always use the key modifier when both are pressed but use same keybind
-            for (SpellKeybind key : keys) {
-                if (key.key.getKeyModifier() != KeyModifier.NONE && key.key.isDown()) {
-                    number = key.getIndex();
-                }
-            }
-
-            // try see if consuming clicks fixes the random key bugs
-            for (SpellKeybind key : SpellKeybind.ALL) {
-                key.key.consumeClick();
-            }
-
-            if (ClientConfigs.getConfig().HOTBAR_SWAPPING.get()) {
-                if (SpellKeybind.IS_ON_SECONd_HOTBAR) {
-                    if (number > -1) {
-                        number += 4;
-                    }
-                }
-            }
-
-            if (number > -1) {
-                // todo make sure its not lagging servers
-                Packets.sendToServer(new TellServerToCastSpellPacket(number));
-                cooldown = 2;
+    private static void checkToAddSpellKeyPress(SpellKeybind key) {
+        if (key.key.consumeClick()) {
+            spellKeysPressed.add(key);
+            // Consume any remaining clicks
+            while (key.key.consumeClick()) {
             }
         }
+    }
+
+    private static void updateSpellInputs() {
+        var keys = SpellKeybind.ALL;
+
+        if (ClientConfigs.getConfig().HOTBAR_SWAPPING.get()) {
+            keys = SpellKeybind.FIRST_HOTBAR_KEYS;
+        }
+
+        spellKeysPressed.removeIf(key -> !key.key.isDown());
+
+        // Prioritize binds with modifiers in case the same key is reused but with a modifier
+        for (SpellKeybind key : keys) {
+            if (key.key.getKeyModifier() == KeyModifier.NONE) {
+                checkToAddSpellKeyPress(key);
+            }
+        }
+
+        for (SpellKeybind key : keys) {
+            if (key.key.getKeyModifier() != KeyModifier.NONE) {
+                checkToAddSpellKeyPress(key);
+            }
+        }
+
+        int number;
+
+        if (!spellKeysPressed.empty()) {
+            number = spellKeysPressed.lastElement().getIndex();
+            if (SpellKeybind.IS_ON_SECONd_HOTBAR) {
+                number += 4;
+            }
+        } else {
+            number = -1;
+        }
+
+        if (number == lastSpellNumber) {
+            if (number == -1) {
+                return;
+            }
+            if (spellPacketResendTimer > 0) {
+                spellPacketResendTimer--;
+                return;
+            }
+        }
+
+        Packets.sendToServer(new TellServerToCastSpellPacket(number));
+        lastSpellNumber = number;
+        spellPacketResendTimer = 2;
     }
 }

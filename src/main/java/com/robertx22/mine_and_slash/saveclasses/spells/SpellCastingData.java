@@ -4,6 +4,7 @@ import com.robertx22.library_of_exile.main.Packets;
 import com.robertx22.library_of_exile.util.ExplainedResult;
 import com.robertx22.mine_and_slash.a_libraries.player_animations.PlayerAnimations;
 import com.robertx22.mine_and_slash.capability.entity.EntityData;
+import com.robertx22.mine_and_slash.capability.player.data.PlayerConfigData;
 import com.robertx22.mine_and_slash.config.forge.compat.CompatConfig;
 import com.robertx22.mine_and_slash.database.data.exile_effects.ExileEffect;
 import com.robertx22.mine_and_slash.database.data.exile_effects.ExileEffectInstanceData;
@@ -30,6 +31,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -212,6 +214,59 @@ public class SpellCastingData {
     public Boolean casting = false;
     public ChargeData charges = new ChargeData();
 
+    // The hotbar index of the spell key the client is holding
+    public int spellInputNumber = -1;
+    // How many ticks left without another packet before we stop casting
+    public int spellInputTimeoutTicks = 0;
+
+    public void onSpellInputPressed(int number) {
+        spellInputNumber = number;
+        spellInputTimeoutTicks = 8;
+    }
+
+    public boolean tryStartSpellCast(Player player, Spell spell) {
+
+        var data = Load.player(player);
+
+        if (player.isBlocking() || player.swinging) {
+            return false;
+        }
+
+        if (spell != null) {
+
+            var can = canCast(spell, player);
+
+            if (can.can) {
+
+                ItemStack wep = player.getMainHandItem();
+
+                if (!wep.isEmpty() && !RepairUtils.isItemBroken(wep)) {
+                    wep.hurt(1, player.getRandom(), (ServerPlayer) player);
+                }
+
+                SpellCastContext c = new SpellCastContext(player, 0, spell);
+                setToCast(c);
+                spell.spendResources(c);
+
+                data.playerDataSync.setDirty();
+                return true;
+            } else {
+
+                var cds = Load.Unit(player).getCooldowns();
+
+                if (!cds.isOnCooldown("spell_fail")) {
+                    cds.setOnCooldown("spell_fail", 40);
+                    if (can.answer != null) {
+                        if (Load.Unit(player).getLevel() < 15 || Load.player(player).config.isConfigEnabled(PlayerConfigData.Config.CAST_FAIL)) {
+                            player.sendSystemMessage(Chats.CAST_FAILED.locName().append(can.answer));
+                        }
+                    }
+                }
+            }
+
+        }
+        return false;
+    }
 
     public void cancelCast(LivingEntity entity) {
         try {
@@ -252,52 +307,62 @@ public class SpellCastingData {
 
     public void onTimePass(LivingEntity entity) {
 
-        try {
-
-            if (isCasting()) {
-                Spell spell = this.calcSpell.getSpell();
-
-                SpellCastContext ctx = new SpellCastContext(entity, castTicksDone, spell);
-
-                if (spell != null && ExileDB.Spells()
-                        .isRegistered(spell)) {
-                    spell.onCastingTick(ctx);
+        if (entity instanceof ServerPlayer player) {
+            if (spellInputNumber != -1) {
+                if (spellInputTimeoutTicks > 0) {
+                    Spell spell = Load.player(player).getSkillGemInventory().getHotbarGem(spellInputNumber).getSpell();
+                    tryStartSpellCast(player, spell);
+                    spellInputTimeoutTicks--;
+                } else {
+                    // client stopped responding, don't cast forever
+                    spellInputNumber = -1;
                 }
+            }
+        }
 
-                tryCast(ctx);
+        if (isCasting()) {
+            try {
+                    Spell spell = this.calcSpell.getSpell();
 
-                lastSpell = spell;
+                    SpellCastContext ctx = new SpellCastContext(entity, castTicksDone, spell);
 
-                castTickLeft--;
-                castTicksDone++;
+                    if (spell != null && ExileDB.Spells()
+                            .isRegistered(spell)) {
+                        spell.onCastingTick(ctx);
+                    }
 
-                if (castTickLeft < 0) {
+                    tryCast(ctx);
 
-                    for (Map.Entry<String, ExileEffectInstanceData> en : ctx.data.statusEffects.exileMap.entrySet()) {
-                        ExileEffect eff = ExileDB.ExileEffects().get(en.getKey());
-                        if (eff.remove_on_spell_cast != null) {
-                            if (spell.config.tags.contains(eff.remove_on_spell_cast)) {
-                                en.getValue().stacks--;
+                    lastSpell = spell;
+
+                    castTickLeft--;
+                    castTicksDone++;
+
+                    if (castTickLeft < 0) {
+
+                        for (Map.Entry<String, ExileEffectInstanceData> en : ctx.data.statusEffects.exileMap.entrySet()) {
+                            ExileEffect eff = ExileDB.ExileEffects().get(en.getKey());
+                            if (eff.remove_on_spell_cast != null) {
+                                if (spell.config.tags.contains(eff.remove_on_spell_cast)) {
+                                    en.getValue().stacks--;
+                                }
                             }
                         }
+
+                        if (ctx.caster instanceof ServerPlayer p) {
+                            Load.Unit(ctx.caster).sync.setDirty();
+                            TellClientEntityCastingSpell.sendUpdates(PlayerAnimations.CastEnum.CAST_FINISH, p, ctx.spell);
+                        }
+
+                        this.calcSpell = null;
                     }
-
-                    if (ctx.caster instanceof ServerPlayer p) {
-                        Load.Unit(ctx.caster).sync.setDirty();
-                        TellClientEntityCastingSpell.sendUpdates(PlayerAnimations.CastEnum.CAST_FINISH, p, ctx.spell);
-                    }
-
-                    this.calcSpell = null;
-                }
-            } else {
-
-                lastSpell = null;
+            } catch (Exception e) {
+                e.printStackTrace();
+                this.cancelCast(entity);
+                // cancel when error, cus this is called on tick, so it doesn't crash servers when 1 spell fails
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            this.cancelCast(entity);
-            // cancel when error, cus this is called on tick, so it doesn't crash servers when 1 spell fails
+        } else {
+            lastSpell = null;
         }
     }
 
