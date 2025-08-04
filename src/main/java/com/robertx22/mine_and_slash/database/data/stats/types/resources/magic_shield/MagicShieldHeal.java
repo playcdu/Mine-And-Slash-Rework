@@ -69,7 +69,7 @@ public class MagicShieldHeal extends Stat {
 
         @Override
         public StatPriority GetPriority() {
-            return StatPriority.Spell.FIRST;
+            return StatPriority.Damage.AFTER_DAMAGE_BONUSES;
         }
 
         @Override
@@ -80,7 +80,7 @@ public class MagicShieldHeal extends Stat {
 
         @Override
         public RestoreResourceEvent activate(RestoreResourceEvent effect, StatData data, Stat stat) {
-            float num = effect.data.getOriginalNumber(EventData.NUMBER).number * data.getValue() / 100F;
+            float num = effect.data.getNumber() * data.getValue() / 100F;
             // we get the original so the scaling only happens for magic shield, not twice
             RestoreResourceEvent restore = EventBuilder.ofRestore(effect.source, effect.target, ResourceType.magic_shield, effect.data.getRestoreType(), num)
                     .build();

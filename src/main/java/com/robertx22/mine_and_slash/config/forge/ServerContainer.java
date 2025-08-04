@@ -119,7 +119,7 @@ public class ServerContainer {
         PROPHECY_JEWEL_RARITY_CHANCE = b.defineInRange("PROPHECY_JEWEL_RARITY_CHANCE", 75, 0, 100);
         PROPHECY_SKILL_GEM_RARITY_CHANCE = b.defineInRange("PROPHECY_SKILL_GEM_RARITY_CHANCE", 75, 0, 100);
         PROPHECY_GEAR_RARITY = b.defineInRange("PROPHECY_GEAR_RARITY", 75, 0, 100);
-
+        PROPHECY_SEARCH_RADIUS = b.defineInRange("PROPHECY_SEARCH_RADIUS", 6, 0, 100);
 
         BONUS_EXP_PERCENT_PER_HIGHER_LVL_CHARACTERS = b.defineInRange("BONUS_EXP_PERCENT_PER_HIGHER_LVL_CHARACTERS", 10, 0, 1000);
 
@@ -287,7 +287,7 @@ public class ServerContainer {
     public ForgeConfigSpec.IntValue PROPHECY_JEWEL_RARITY_CHANCE;
     public ForgeConfigSpec.IntValue PROPHECY_SKILL_GEM_RARITY_CHANCE;
     public ForgeConfigSpec.IntValue PROPHECY_GEAR_RARITY;
-
+    public ForgeConfigSpec.IntValue PROPHECY_SEARCH_RADIUS;
 
     public ForgeConfigSpec.DoubleValue BLOCK_COST;
 
