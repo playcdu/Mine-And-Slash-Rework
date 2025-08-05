@@ -49,7 +49,7 @@ public class SpellSchool implements JsonExileRegistry<SpellSchool>, IAutoGson<Sp
 
         int needed = baselvl + bonusLvlsNeeded;
 
-        return Load.Unit(en).getLevel() >= needed;
+        return Load.Unit(en).getLevel() > needed;
     }
 
 
