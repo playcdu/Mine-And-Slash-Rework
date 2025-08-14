@@ -125,6 +125,14 @@ public class MMORPG {
 
     public MMORPG() {
 
+        // Ensure modlist version mismatches don't block connections when protocol stays compatible
+        net.minecraftforge.fml.ModLoadingContext.get().registerExtensionPoint(net.minecraftforge.fml.IExtensionPoint.DisplayTest.class,
+                () -> new net.minecraftforge.fml.IExtensionPoint.DisplayTest(
+                        () -> net.minecraftforge.network.NetworkConstants.IGNORESERVERONLY,
+                        (incoming, isNetwork) -> true
+                )
+        );
+
         SchemaTest.run();
 
         final IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
